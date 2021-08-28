@@ -1,27 +1,47 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.card{
+  min-height: 170px;
+  color: #716B62;
+  @apply shadow-md rounded-lg p-4 grid grid-rows-3 gap-1;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.yellow-card{
+  background-color: #FEF7EC;
+  .number{
+    color: #F2CA99;
+  }
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+.red-card{
+  background-color: #FAEFEE;
+  .number{
+    color: #F08788;
+  }
 }
 
-#container a {
-  text-decoration: none;
+.green-card{
+  background-color: #D5F8F0;
+  .number{
+    color: #8DDFCC;
+  }
+}
+
+.blue-card{
+  background-color: #E1EEF6;
+  .number{
+  color: #8CACE6;
+  }
+}
+
+.purple-card{
+  background-color: #EDF4FF;
+  .number{
+    color: #C2D3F6;
+  }
+}
+
+.orange-card{
+  background-color: #FBE8DE;
+  .number{
+    color: #EE8888;
+  }
 }

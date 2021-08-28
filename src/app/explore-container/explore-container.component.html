@@ -1,4 +1,13 @@
-<div id="container">
-  <strong>{{ name }}</strong>
-  <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<div class="container mx-auto p-2">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+    <div class="card yellow-card" *ngFor="let item of [0, 1, 2, 3, 4]">
+      <ion-icon class="text-2xl" name="person-add-outline"></ion-icon>
+      <div class="font-bold tracking-wide">
+        Nuevo ingreso mujeres
+      </div>
+      <div class="font-bold text-2xl number flex items-end justify-end">
+        1832
+      </div>
+    </div>
+  </div>
 </div>
