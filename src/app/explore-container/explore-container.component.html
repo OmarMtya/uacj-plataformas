@@ -15,9 +15,11 @@
 
 <div class="fixed bottom-0 right-0 m-2">
   <div class="relative">
-    <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn" *ngIf="showFilters">
+    <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn"
+      [ngClass]="{'block': showFilters, 'hidden': !showFilters}">
       <select>
         <option disabled selected>Periodo</option>
+        <option *ngFor="let periodo of periodos">{{ periodo.desc }}</option>
       </select>
       <select>
         <option disabled selected>Campus</option>

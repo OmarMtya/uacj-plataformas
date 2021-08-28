@@ -1,1 +1,3 @@
-export const effects: any[] = [];
+import { TrayectoriaEffects } from "./trayectoria.effects";
+
+export const effects: any[] = [TrayectoriaEffects];
