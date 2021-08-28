@@ -1,47 +1,50 @@
+select{
+  @apply block w-full my-5 rounded px-2 py-1 text-sm text-gray-500;
+}
+
 .card{
   min-height: 170px;
   color: #716B62;
-  @apply shadow-md rounded-lg p-4 grid grid-rows-3 gap-1;
 }
 
 .yellow-card{
   background-color: #FEF7EC;
-  .number{
+  .number, ion-icon{
     color: #F2CA99;
   }
 }
 
 .red-card{
   background-color: #FAEFEE;
-  .number{
+  .number, ion-icon{
     color: #F08788;
   }
 }
 
 .green-card{
   background-color: #D5F8F0;
-  .number{
+  .number, ion-icon{
     color: #8DDFCC;
   }
 }
 
 .blue-card{
   background-color: #E1EEF6;
-  .number{
+  .number, ion-icon{
   color: #8CACE6;
   }
 }
 
 .purple-card{
   background-color: #EDF4FF;
-  .number{
+  .number, ion-icon{
     color: #C2D3F6;
   }
 }
 
 .orange-card{
   background-color: #FBE8DE;
-  .number{
+  .number, ion-icon{
     color: #EE8888;
   }
 }

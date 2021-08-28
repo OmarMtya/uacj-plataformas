@@ -1,13 +1,37 @@
-<div class="container mx-auto p-2">
+<div class="container mx-auto p-2 pb-16">
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-    <div class="card yellow-card" *ngFor="let item of [0, 1, 2, 3, 4]">
-      <ion-icon class="text-2xl" name="person-add-outline"></ion-icon>
+    <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 yellow-card"
+      *ngFor="let item of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
+      <ion-icon class="text-2xl" name="person-add"></ion-icon>
       <div class="font-bold tracking-wide">
         Nuevo ingreso mujeres
       </div>
       <div class="font-bold text-2xl number flex items-end justify-end">
         1832
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="fixed bottom-0 right-0 m-2">
+  <div class="relative">
+    <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn" *ngIf="showFilters">
+      <select>
+        <option disabled selected>Periodo</option>
+      </select>
+      <select>
+        <option disabled selected>Campus</option>
+      </select>
+      <select>
+        <option disabled selected>Nivel</option>
+      </select>
+      <select>
+        <option disabled selected>Porgrama</option>
+      </select>
+    </div>
+    <div (click)="showFilters = !showFilters"
+      class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer">
+      <ion-icon [name]="showFilters? 'close' : 'funnel'" class="text-xl"></ion-icon>
     </div>
   </div>
 </div>
