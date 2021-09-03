@@ -17,19 +17,24 @@
   <div class="relative">
     <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn"
       [ngClass]="{'block': showFilters, 'hidden': !showFilters}">
-      <select>
-        <option disabled selected>Periodo</option>
-        <option *ngFor="let periodo of periodos">{{ periodo.desc }}</option>
-      </select>
-      <select>
-        <option disabled selected>Campus</option>
-      </select>
-      <select>
-        <option disabled selected>Nivel</option>
-      </select>
-      <select>
-        <option disabled selected>Porgrama</option>
-      </select>
+      <form [formGroup]="form">
+        <select formControlName="periodo">
+          <option disabled selected value="todos">Periodo</option>
+          <option *ngFor="let periodo of periodos" [value]="periodo.desc">{{ periodo.desc }}</option>
+        </select>
+        <select formControlName="campus">
+          <option disabled selected value="todos">Campus</option>
+          <option *ngFor="let campus of campus" [value]="campus.desc">{{ campus.desc }}</option>
+        </select>
+        <select formControlName="nivel">
+          <option disabled selected value="todos">Nivel</option>
+          <option *ngFor="let nivel of niveles" [value]="nivel.desc">{{ nivel.desc }}</option>
+        </select>
+        <select formControlName="programa">
+          <option disabled selected value="todos">Programa</option>
+          <option *ngFor="let programa of programas" [value]="programa.desc">{{ programa.desc }}</option>
+        </select>
+      </form>
     </div>
     <div (click)="showFilters = !showFilters"
       class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer">
