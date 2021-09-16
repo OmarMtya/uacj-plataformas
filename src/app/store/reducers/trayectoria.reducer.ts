@@ -5,6 +5,7 @@ import { Nivel } from 'src/app/models/nivel.model';
 import { Programa } from 'src/app/models/programas.model';
 import { Periodo } from '../../models/periodo.model';
 import * as trayectoria from '../actions/trayectoria.actions';
+import { Consulta } from '../../models/consulta.model';
 
 export interface TrayectoriaState {
   cargando: boolean;
@@ -13,7 +14,7 @@ export interface TrayectoriaState {
   campus: Campus[];
   niveles: Nivel[];
   programas: Programa[];
-  consulta: Estadistica[];
+  consulta: Consulta;
 };
 
 const initialState: TrayectoriaState = {
@@ -23,7 +24,7 @@ const initialState: TrayectoriaState = {
   campus: [],
   niveles: [],
   programas: [],
-  consulta: [],
+  consulta: null,
 };
 
 export const trayectoriareducer = createReducer(

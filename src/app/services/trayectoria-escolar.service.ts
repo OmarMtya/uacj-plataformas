@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Rubro } from '../interfaces/rubro.interface';
+import { Periodo } from '../models/periodo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,15 @@ export class TrayectoriaEscolarService {
 
   getConsulta(rubro: Rubro, periodo: string, campus: string, nivel: string, programa: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_${rubro}/${periodo}/${campus}/${nivel}/${programa}`).pipe(map((x: any) => {
-      let tarjetas = x[0][0];
+      let tarjetas = x[0];
       let total = x[1][0];
-      let total_alumnos = {hombres: x[2][0], mujeres: x[2][1]};
+      let total_alumnos = { hombres: x[2][0], mujeres: x[2][1] };
       return { tarjetas, total, total_alumnos };
     }));
+  }
+
+  getFechaCorte(rubro: Rubro, periodo: Periodo) {
+    return this.http.get(`${this.getRuta(`/fecha_corte`)}${periodo.desc}/${rubro}`);
   }
 
   private getRuta(ruta?: string) {

@@ -5,6 +5,7 @@ import { Estadistica } from "src/app/models/estadistica.model";
 import { Nivel } from "src/app/models/nivel.model";
 import { Programa } from "src/app/models/programas.model";
 import { Periodo } from '../../models/periodo.model';
+import { Consulta } from '../../models/consulta.model';
 
 export const getPeriodos = createAction(
   '[Trayectoria] Get Periodos',
@@ -73,7 +74,7 @@ export const getConsulta = createAction(
 
 export const getConsultaSuccess = createAction(
   '[Trayectoria] Get Consulta Success',
-  props<{ consulta: Estadistica[] }>()
+  props<{ consulta: Consulta }>()
 );
 
 export const getConsultaFailure = createAction(
