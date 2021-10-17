@@ -2,6 +2,10 @@ select{
   @apply block w-full my-5 rounded px-2 py-1 text-sm text-gray-500;
 }
 
+.activo{
+  @apply text-gray-700 font-bold border-b-2 border-gray-800;
+}
+
 .card{
   min-height: 170px;
   color: #716B62;
@@ -48,3 +52,4 @@ select{
     color: #EE8888;
   }
 }
+

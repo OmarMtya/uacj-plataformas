@@ -13,6 +13,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { effects } from './store/effects/index';
 import { appreducers } from './store/app.store';
 import { HttpClientModule } from '@angular/common/http';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,7 +28,8 @@ import { HttpClientModule } from '@angular/common/http';
       maxAge: 25,
       logOnly: environment.production
     }),
-    EffectsModule.forRoot(effects)],
+    EffectsModule.forRoot(effects),
+    StoreRouterConnectingModule.forRoot()],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
