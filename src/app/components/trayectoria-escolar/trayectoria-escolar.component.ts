@@ -4,15 +4,15 @@ import { ActivatedRoute } from '@angular/router';
 import { ViewDidEnter, ViewDidLeave, ViewWillLeave } from '@ionic/angular';
 import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { forkJoin, Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { forkJoin, of, Subject, Subscription } from 'rxjs';
+import { filter, take, takeUntil } from 'rxjs/operators';
 import { Rubro } from 'src/app/interfaces/rubro.interface';
 import { Campus } from 'src/app/models/campus.model';
 import { Consulta } from 'src/app/models/consulta.model';
 import { Nivel } from 'src/app/models/nivel.model';
 import { Periodo } from 'src/app/models/periodo.model';
 import { Programa } from 'src/app/models/programas.model';
-import { getCampus, getNiveles, getPeriodos, getProgramas } from 'src/app/store/actions/form.actions';
+import { getCampus, getNiveles, getPeriodos, getPeriodosSuccess, getProgramas } from 'src/app/store/actions/form.actions';
 import { getConsulta, seleccionarRubro } from 'src/app/store/actions/trayectoria.actions';
 import { AppState } from 'src/app/store/app.store';
 import { getRubroTE } from 'src/app/store/selectors/router.selectors';
@@ -51,7 +51,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
 
   form: FormGroup;
 
-  trayectoriaVirgen = true;
+  formularioVirgen = true;
 
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
@@ -64,58 +64,104 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     private actions$: Actions,
   ) {
     this.form = this.fb.group({
-      periodo: new FormControl('2021-I', []),
-      campus: new FormControl('Todos', []),
-      nivel: new FormControl('Todos', []),
-      programa: new FormControl('Todos', []),
+      periodo: new FormControl(null, []),
+      campus: new FormControl(null, []),
+      nivel: new FormControl(null, []),
+      programa: new FormControl(null, []),
     });
   }
 
   ngOnInit() {
-    this.suscribirme();
-    this.store.dispatch(getConsulta({
-      rubro: this.rubroSeleccionado,
-      periodo: this.form.get('periodo').value,
-      campus: this.form.get('campus').value,
-      nivel: this.form.get('nivel').value,
-      programa: this.form.get('programa').value,
-    }));
+    this.detectarRubro();
   }
 
   ngOnDestroy(): void {
     this.unsuscribe$.next();
   }
 
-  suscribirme() {
-    /**
-     * Suscripción al cambio de rubros, se trae periodos, campus, niveles y programas dependiendo del rubro seleccionado
-     */
-    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro) => {
-      this.rubroSeleccionado = rubro;
-      this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
-      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value }));
-      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value }));
-      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }));
-    });
+  detectarRubro() {
+    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro) => this.rubroSeleccionado = rubro);
 
+    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
+
+    this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => {
+      console.log("ENTRO SOLO UNA VEZ");
+
+      this.form.patchValue({
+        periodo: periodos[0].desc,
+        campus: 'Todos',
+        nivel: 'Todos',
+        programa: 'Todos',
+      }, {
+        emitEvent: false,
+        onlySelf: true
+      });
+
+      this.store.dispatch(getConsulta({
+        rubro: this.rubroSeleccionado,
+        periodo: periodos[0].desc,
+        campus: this.form.get('campus').value,
+        nivel: this.form.get('nivel').value,
+        programa: this.form.get('programa').value,
+      }));
+
+      of(
+        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value })),
+        this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value })),
+        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }))
+      ).pipe(take(1)).subscribe(() => {
+        this.suscribirme();
+      });
+
+    });
+  }
+
+
+  suscribirme() {
     /**
      * Suscripción a la consulta en la store
      */
     this.store.pipe(select(trayectoriaSelectors.getConsulta)).pipe(takeUntil(this.unsuscribe$)).subscribe((consulta: Consulta) => this.consulta = consulta);
 
     /**
+     * Suscripción al cambio de rubros, se trae periodos, campus, niveles y programas dependiendo del rubro seleccionado
+     */
+    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$), filter((x) => this.periodos.length != 0)).subscribe((rubro: Rubro) => { // ! Vas a tener que hacer un THEN después de obtener periodos
+      this.form.patchValue({
+        periodo: this.periodos[0].desc,
+        campus: 'Todos',
+        nivel: 'Todos',
+        programa: 'Todos',
+      });
+
+      this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
+      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value }));
+      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value }));
+      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }));
+    });
+
+
+    /**
      * Suscripciones para los cambios de periodos, campus, niveles y programas del store
      */
-    this.store.pipe(select(formSelectors.getCampus)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => this.campus = x);
-    this.store.pipe(select(formSelectors.getNiveles)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => this.niveles = x);
-    this.store.pipe(select(formSelectors.getPeriodos)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => this.periodos = x);
-    this.store.pipe(select(formSelectors.getProgramas)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => this.programas = x);
+    this.store.pipe(select(formSelectors.getPeriodos)).pipe(takeUntil(this.unsuscribe$), filter((x) => x.length != 0)).subscribe((x) => {
+      this.periodos = x;
+    });
+    this.store.pipe(select(formSelectors.getCampus)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => {
+      this.campus = x;
+    });
+    this.store.pipe(select(formSelectors.getNiveles)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => {
+      this.niveles = x;
+    });
+    this.store.pipe(select(formSelectors.getProgramas)).pipe(takeUntil(this.unsuscribe$)).subscribe((x) => {
+      this.programas = x;
+    });
 
     /**
      * Suscripciones para los cambios de periodos, campus, niveles y programas del los formularios
      */
 
-    this.getSubscripcionForm('periodo').pipe(takeUntil(this.unsuscribe$)).subscribe((periodo: string) => {
+    this.getSubscripcionForm('periodo').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((periodo: string) => {
       this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo }));
       this.form.patchValue({
         campus: null,
@@ -125,9 +171,10 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
 
       this.form.get('nivel').disable();
       this.form.get('programa').disable();
+      this.formularioVirgen = false;
     });
 
-    this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$)).subscribe((campus: string) => {
+    this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((campus: string) => {
       this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus }));
 
       this.form.patchValue({
@@ -139,7 +186,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
       this.form.get('programa').disable();
     });
 
-    this.getSubscripcionForm('nivel').pipe(takeUntil(this.unsuscribe$)).subscribe((nivel: string) => {
+    this.getSubscripcionForm('nivel').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((nivel: string) => {
       this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel }));
 
       this.form.patchValue({
@@ -149,7 +196,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
       this.form.get('programa').enable();
     });
 
-    this.getSubscripcionForm('programa').pipe(takeUntil(this.unsuscribe$)).subscribe((programa: string) => {
+    this.getSubscripcionForm('programa').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((programa: string) => {
       this.store.dispatch(getConsulta({
         rubro: this.rubroSeleccionado,
         periodo: this.form.get('periodo').value,
@@ -181,7 +228,17 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo'));
     this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' });
     rubro.classList.add('activo');
-    this.store.dispatch(seleccionarRubro({ rubro: <Rubro>rubroObj }));
+    this.unsuscribe$.next(); // Me desuscribo de todos lados
+
+    this.store.dispatch(getPeriodos({ rubro: <Rubro>rubroObj }));
+
+    this.actions$.pipe(
+      ofType(getPeriodosSuccess),
+      take(1)
+    ).subscribe(() => {
+      this.store.dispatch(seleccionarRubro({ rubro: <Rubro>rubroObj }));
+      this.detectarRubro(); // Para volverme a suscribir de vuelta
+    });
   }
 
   generarTarjetas() {

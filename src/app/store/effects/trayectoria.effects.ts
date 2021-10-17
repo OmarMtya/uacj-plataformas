@@ -25,16 +25,16 @@ export class TrayectoriaEffects {
     );
   });
 
-  seleccionarRubro$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(appActions.seleccionarRubro),
-      tap(({ rubro }) => {
-        this.store.dispatch(getPeriodos({ rubro }));
-      }),
-    );
-  }, {
-    dispatch: false
-  });
+  // seleccionarRubro$ = createEffect(() => {
+  //   return this.actions$.pipe(
+  //     ofType(appActions.seleccionarRubro),
+  //     tap(({ rubro }) => {
+  //       this.store.dispatch(getPeriodos({ rubro }));
+  //     }),
+  //   );
+  // }, {
+  //   dispatch: false
+  // });
 
   constructor(
     private actions$: Actions,

@@ -12,10 +12,6 @@ import { Rubro } from 'src/app/interfaces/rubro.interface';
 export interface TrayectoriaState {
   cargando: boolean;
   error: any;
-  periodos: Periodo[];
-  campus: Campus[];
-  niveles: Nivel[];
-  programas: Programa[];
   consulta: Consulta;
   rubroSeleccionado: Rubro;
 };
@@ -23,10 +19,6 @@ export interface TrayectoriaState {
 const initialState: TrayectoriaState = {
   cargando: false,
   error: null,
-  periodos: [],
-  campus: [],
-  niveles: [],
-  programas: [],
   consulta: null,
   rubroSeleccionado: 'matricula'
 };
