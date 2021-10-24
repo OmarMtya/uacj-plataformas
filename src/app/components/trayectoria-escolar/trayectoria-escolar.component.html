@@ -14,11 +14,11 @@
   </ion-header>
   <div class="container mx-auto p-2 pb-16">
 
-    <div #containerRubros class="flex flex-row overflow-x-auto mb-4 pb-2 container-scrollbar">
+    <div #containerRubros class="flex flex-row overflow-x-auto mb-4 pb-2 container-scrollbar justify-center">
       <div *ngFor="let rubro of rubrosDisponibles; index as index"
         class="px-5 text-gray-300 font-thin border-b border-gray-200 pb-2" [ngClass]="{'activo': index == 0}"
         (click)="localizarRubro(rubroElement, rubro)" #rubroElement>
-        {{rubro | titlecase}}
+        {{rubro | removeUnderscore | titlecase }}
       </div>
     </div>
 
@@ -35,88 +35,6 @@
             {{tarjeta.valor}}
           </div>
         </div>
-
-        <!-- <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 yellow-card sm:col-span-2">
-          <ion-icon class="text-2xl" name="location-sharp"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Campus
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{form.controls.campus.value}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 red-card">
-          <ion-icon class="text-2xl" name="woman"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Nuevo ingreso mujeres
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ni_mujeres}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 blue-card">
-          <ion-icon class="text-2xl" name="man"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Nuevo ingreso hombres
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ni_hombres}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 green-card sm:col-span-2">
-          <ion-icon class="text-2xl" name="person-add"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Nuevo ingreso total
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ni_total}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 purple-card">
-          <ion-icon class="text-2xl" name="woman"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Reingreso mujeres
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ri_mujeres}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 orange-card">
-          <ion-icon class="text-2xl" name="man"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Reingreso hombres
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ri_hombres}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 red-card">
-          <ion-icon class="text-2xl" name="refresh"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Reingreso total
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.ri_total}}
-          </div>
-        </div>
-
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 yellow-card">
-          <ion-icon class="text-2xl" name="people"></ion-icon>
-          <div class="font-bold tracking-wide">
-            Matrículas totales
-          </div>
-          <div class="font-bold text-2xl number flex items-end justify-end">
-            {{consulta.total.total_matricula}}
-          </div>
-        </div> -->
-
-
       </div>
 
       <section class="container mx-auto mt-4 text-xs">
@@ -126,61 +44,26 @@
               <thead>
                 <tr
                   class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                  <th class="px-4 py-3">Programa</th>
-                  <th class="px-4 py-3">Campus</th>
-                  <th class="px-4 py-3">Nuevo ingreso Mujeres</th>
-                  <th class="px-4 py-3">Nuevo ingreso hombres</th>
-                  <th class="px-4 py-3">Nuevo ingreso total</th>
-                  <th class="px-4 py-3">Reingreso Mujeres</th>
-                  <th class="px-4 py-3">Reingreso hombres</th>
-                  <th class="px-4 py-3">Reingreso total</th>
-                  <th class="px-4 py-3">Mujeres total</th>
-                  <th class="px-4 py-3">Hombres total</th>
-                  <th class="px-4 py-3">Matrículas totales</th>
-                  <th class="px-4 py-3">Nivel</th>
+                  <th class="px-4 py-3" *ngFor="let item of consulta.tabla.headers">{{item}}</th>
                 </tr>
               </thead>
               <tbody class="bg-white">
-                <tr class="text-gray-700" *ngFor="let row of consulta.rows_tablas">
-                  <td class="px-4 py-3 border">
-                    {{row.serie}}
-                  </td>
-                  <td class="px-4 py-3 text-ms font-semibold border">
-                    <span class="px-2 py-1 font-semibold leading-tight text-gray-700 rounded-sm bg-green-100"
-                      [ngClass]="{'bg-purple-100': row.campus == 'IADA', 'bg-green-100': row.campus == 'IIT', 'bg-blue-100': row.campus == 'ICB', 'bg-red-100': row.campus == 'ICSA'}">
-                      {{row.campus}}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.ni_mujeres}}
-                  </td>
-                  <td class="px-4 py-3 text-sm border">
-                    {{row.ni_hombres}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.ni_total}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.ri_mujeres}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.ri_hombres}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.ri_total}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.total_mujeres}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.total_hombres}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.total_matricula}}
-                  </td>
-                  <td class="px-4 py-3 text-xs border">
-                    {{row.nivel}}
-                  </td>
+                <tr class="text-gray-700" *ngFor="let row of consulta.tabla.rows; ">
+                  <ng-container *ngFor="let info of row; index as i">
+                    <ng-container *ngIf="i == 1; else elseTemplate">
+                      <td class="px-4 py-3 text-ms font-semibold border">
+                        <span class="px-2 py-1 font-semibold leading-tight text-gray-700 rounded-sm bg-green-100"
+                          [ngClass]="{'bg-purple-100': info == 'IADA', 'bg-green-100': info == 'IIT', 'bg-blue-100': info == 'ICB', 'bg-red-100': info == 'ICSA'}">
+                          {{info}}
+                        </span>
+                      </td>
+                    </ng-container>
+                    <ng-template #elseTemplate>
+                      <td class="px-4 py-3 border">
+                        {{info}}
+                      </td>
+                    </ng-template>
+                  </ng-container>
                 </tr>
               </tbody>
             </table>

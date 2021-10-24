@@ -1,3 +1,4 @@
 <ion-app>
   <ion-router-outlet></ion-router-outlet>
+  <app-loading *ngIf="cargando$ | async"></app-loading>
 </ion-app>

@@ -12,3 +12,5 @@ export const getConsulta = createSelector(
   getTrayectoriaState,
   (state: TrayectoriaState) => state.consulta
 );
+
+export const getTrayectoriaCargando = createSelector(getTrayectoriaState, (state: TrayectoriaState) => state.cargando);

@@ -1,11 +1,10 @@
 import { Estadistica } from './estadistica.model';
 export interface Consulta {
-  // total_alumnos: {
-  //   hombres: Serie;
-  //   mujeres: Serie;
-  // };
   tarjetas: Tarjeta[];
-  rows_tablas: Estadistica[];
+  tabla: {
+    headers: string[];
+    rows: any[][];
+  }
 }
 
 

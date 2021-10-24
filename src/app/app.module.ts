@@ -14,6 +14,7 @@ import { effects } from './store/effects/index';
 import { appreducers } from './store/app.store';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { SharedModule } from './components/shared/shared.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,7 +30,8 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
       logOnly: environment.production
     }),
     EffectsModule.forRoot(effects),
-    StoreRouterConnectingModule.forRoot()],
+    StoreRouterConnectingModule.forRoot(),
+    SharedModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

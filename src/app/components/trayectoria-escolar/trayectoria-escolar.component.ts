@@ -121,7 +121,9 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     /**
      * Suscripción a la consulta en la store
      */
-    this.store.pipe(select(trayectoriaSelectors.getConsulta)).pipe(takeUntil(this.unsuscribe$)).subscribe((consulta: Consulta) => this.consulta = consulta);
+    this.store.pipe(select(trayectoriaSelectors.getConsulta)).pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((consulta: Consulta) => {
+      this.consulta = consulta;
+    });
 
     /**
      * Suscripción al cambio de rubros, se trae periodos, campus, niveles y programas dependiendo del rubro seleccionado
