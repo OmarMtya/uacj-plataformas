@@ -12,8 +12,8 @@ const routes: Routes = [
         loadChildren: () => import('../trayectoria-escolar/trayectoria-escolar.module').then(m => m.TrayectoriaEscolarModule)
       },
       {
-        path: 'tab2',
-        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
+        path: 'edi',
+        loadChildren: () => import('../desarrollo-institucional/desarrollo-institucional-routing.module').then(m => m.DesarrolloInstitucionalRoutingModule)
       },
       {
         path: 'tab3',

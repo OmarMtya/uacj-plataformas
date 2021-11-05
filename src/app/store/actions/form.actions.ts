@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { Rubro } from "src/app/interfaces/rubro.interface";
+import { Desarrollo, Rubro, Trayectoria } from "src/app/interfaces/rubro.interface";
 import { Campus } from "src/app/models/campus.model";
 import { Nivel } from "src/app/models/nivel.model";
 import { Periodo } from "src/app/models/periodo.model";
@@ -7,7 +7,7 @@ import { Programa } from "src/app/models/programas.model";
 
 export const getPeriodos = createAction(
   '[Trayectoria] Get Periodos',
-  props<{ rubro: Rubro }>()
+  props<{ rubro: Rubro<Trayectoria | Desarrollo> }>()
 );
 
 export const getPeriodosSuccess = createAction(
@@ -22,7 +22,7 @@ export const getPeriodosFailure = createAction(
 
 export const getCampus = createAction(
   '[Trayectoria] Get Campus',
-  props<{ rubro: Rubro, periodo: string }>()
+  props<{ rubro: Rubro<Trayectoria>, periodo: string }>()
 );
 
 export const getCampusSuccess = createAction(
@@ -37,7 +37,7 @@ export const getCampusFailure = createAction(
 
 export const getNiveles = createAction(
   '[Trayectoria] Get Niveles',
-  props<{ rubro: Rubro, periodo: string, campus: string }>()
+  props<{ rubro: Rubro<Trayectoria>, periodo: string, campus: string }>()
 );
 
 export const getNivelesSuccess = createAction(
@@ -52,7 +52,7 @@ export const getNivelesFailure = createAction(
 
 export const getProgramas = createAction(
   '[Trayectoria] Get Programas',
-  props<{ rubro: Rubro, periodo: string, campus: string, nivel: string }>()
+  props<{ rubro: Rubro<Trayectoria>, periodo: string, campus: string, nivel: string }>()
 );
 
 export const getProgramasSuccess = createAction(

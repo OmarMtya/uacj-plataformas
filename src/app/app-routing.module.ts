@@ -6,7 +6,8 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule)
   },
-  { path: 'trayectoria-escolar', loadChildren: () => import('./components/trayectoria-escolar/trayectoria-escolar.module').then(m => m.TrayectoriaEscolarModule) }
+  { path: 'trayectoria-escolar', loadChildren: () => import('./components/trayectoria-escolar/trayectoria-escolar.module').then(m => m.TrayectoriaEscolarModule) },
+  { path: 'desarrollo-institucional', loadChildren: () => import('./components/desarrollo-institucional/desarrollo-institucional.module').then(m => m.DesarrolloInstitucionalModule) }
 ];
 @NgModule({
   imports: [

@@ -7,13 +7,13 @@ import { Periodo } from '../../models/periodo.model';
 import * as trayectoria from '../actions/trayectoria.actions';
 
 import { Consulta } from '../../models/consulta.model';
-import { Rubro } from 'src/app/interfaces/rubro.interface';
+import { Desarrollo, Rubro, Trayectoria } from 'src/app/interfaces/rubro.interface';
 
 export interface TrayectoriaState {
   cargando: boolean;
   error: any;
   consulta: Consulta;
-  rubroSeleccionado: Rubro;
+  rubroSeleccionado: Rubro<Trayectoria | Desarrollo>;
 };
 
 const initialState: TrayectoriaState = {

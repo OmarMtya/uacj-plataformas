@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { Rubro } from "src/app/interfaces/rubro.interface";
+import { Desarrollo, Rubro, Trayectoria } from "src/app/interfaces/rubro.interface";
 import { Campus } from "src/app/models/campus.model";
 import { Estadistica } from "src/app/models/estadistica.model";
 import { Nivel } from "src/app/models/nivel.model";
@@ -10,7 +10,7 @@ import { Consulta } from '../../models/consulta.model';
 
 export const getConsulta = createAction(
   '[Trayectoria] Get Consulta',
-  props<{ rubro: Rubro, periodo: string, campus: string, nivel: string, programa: string }>()
+  props<{ rubro: Rubro<Trayectoria>, periodo: string, campus: string, nivel: string, programa: string }>()
 );
 
 export const getConsultaSuccess = createAction(
@@ -25,5 +25,5 @@ export const getConsultaFailure = createAction(
 
 export const seleccionarRubro = createAction(
   '[Trayectoria] Seleccionar Rubro',
-  props<{ rubro: Rubro }>()
+  props<{ rubro: Rubro<Trayectoria | Desarrollo> }>()
 );

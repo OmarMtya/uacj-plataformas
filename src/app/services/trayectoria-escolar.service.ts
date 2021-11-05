@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Rubro } from '../interfaces/rubro.interface';
+import { Desarrollo, Rubro } from '../interfaces/rubro.interface';
 import { Consulta, Tarjeta } from '../models/consulta.model';
 import { Periodo } from '../models/periodo.model';
+import { Trayectoria } from '../interfaces/rubro.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,23 +17,23 @@ export class TrayectoriaEscolarService {
     private http: HttpClient
   ) { }
 
-  getPeriodos(rubro: Rubro) {
+  getPeriodos(rubro: Rubro<Trayectoria | Desarrollo>) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_periodos`);
   }
 
-  getCampus(rubro: Rubro, periodo: string) {
+  getCampus(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
   }
 
-  getNiveles(rubro: Rubro, periodo: string, campus: string) {
+  getNiveles(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_nivel/${periodo}/${campus}`);
   }
 
-  getProgramas(rubro: Rubro, periodo: string, campus: string, nivel: string) {
+  getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_programa/${periodo}/${campus}/${nivel}`);
   }
 
-  getConsulta(rubro: Rubro, periodo: string, campus: string, nivel: string, programa: string) {
+  getConsulta(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, programa: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_${rubro}/${periodo}/${campus}/${nivel}/${programa}`).pipe(map((x: any) => {
       let rows_tablas = x[0];
       console.log(rows_tablas);
@@ -87,7 +88,7 @@ export class TrayectoriaEscolarService {
     }));
   }
 
-  getFechaCorte(rubro: Rubro, periodo: Periodo) {
+  getFechaCorte(rubro: Rubro<Trayectoria>, periodo: Periodo) {
     return this.http.get(`${this.getRuta(`/fecha_corte`)}${periodo.desc}/${rubro}`);
   }
 
@@ -95,7 +96,7 @@ export class TrayectoriaEscolarService {
     return `${environment.server}${ruta ? ruta : ''}`
   }
 
-  private llenarTablas(rubro: Rubro) {
+  private llenarTablas(rubro: Rubro<Trayectoria | Desarrollo>) {
     switch (rubro) {
       case 'matricula':
         return [
@@ -189,7 +190,7 @@ export class TrayectoriaEscolarService {
     }
   }
 
-  private llenarTarjetas(rubro: Rubro) {
+  private llenarTarjetas(rubro: Rubro<Trayectoria | Desarrollo>) {
     switch (rubro) {
       case 'matricula':
         return [

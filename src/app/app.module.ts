@@ -15,11 +15,15 @@ import { appreducers } from './store/app.store';
 import { HttpClientModule } from '@angular/common/http';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { SharedModule } from './components/shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
+    CommonModule,
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
@@ -31,7 +35,10 @@ import { SharedModule } from './components/shared/shared.module';
     }),
     EffectsModule.forRoot(effects),
     StoreRouterConnectingModule.forRoot(),
-    SharedModule],
+    SharedModule,
+    ReactiveFormsModule,
+    DesarrolloInstitucionalModule // Marca un error si no lo importas en el módulo principal
+  ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

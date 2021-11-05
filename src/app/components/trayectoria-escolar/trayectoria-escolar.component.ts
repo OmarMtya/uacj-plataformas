@@ -6,7 +6,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { forkJoin, of, Subject, Subscription } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
-import { Rubro } from 'src/app/interfaces/rubro.interface';
+import { Rubro, Trayectoria, Trayectorias } from 'src/app/interfaces/rubro.interface';
 import { Campus } from 'src/app/models/campus.model';
 import { Consulta } from 'src/app/models/consulta.model';
 import { Nivel } from 'src/app/models/nivel.model';
@@ -36,18 +36,9 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   niveles: Nivel[] = [];
   programas: Programa[] = [];
   consulta: Consulta;
-  rubrosDisponibles: string[] = [
-    'matricula',
-    'aspirantes',
-    'aprobacion',
-    'desercion',
-    'retencion',
-    'eficiencia_terminal',
-    'egresados',
-    'titulados'
-  ];
+  rubrosDisponibles: string[] = Trayectorias;
 
-  rubroSeleccionado: Rubro = 'matricula'; // Entra por default a matrícula
+  rubroSeleccionado: Rubro<Trayectoria> = 'matricula'; // Entra por default a matrícula
 
   form: FormGroup;
 
@@ -80,7 +71,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   detectarRubro() {
-    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro) => this.rubroSeleccionado = rubro);
+    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro<Trayectoria>) => this.rubroSeleccionado = rubro);
 
     this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
 
@@ -128,7 +119,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     /**
      * Suscripción al cambio de rubros, se trae periodos, campus, niveles y programas dependiendo del rubro seleccionado
      */
-    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$), filter((x) => this.periodos.length != 0)).subscribe((rubro: Rubro) => { // ! Vas a tener que hacer un THEN después de obtener periodos
+    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$), filter((x) => this.periodos.length != 0)).subscribe((rubro: Rubro<Trayectoria>) => { // ! Vas a tener que hacer un THEN después de obtener periodos
       this.form.patchValue({
         periodo: this.periodos[0].desc,
         campus: 'Todos',
@@ -232,13 +223,13 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     rubro.classList.add('activo');
     this.unsuscribe$.next(); // Me desuscribo de todos lados
 
-    this.store.dispatch(getPeriodos({ rubro: <Rubro>rubroObj }));
+    this.store.dispatch(getPeriodos({ rubro: <Rubro<Trayectoria>>rubroObj }));
 
     this.actions$.pipe(
       ofType(getPeriodosSuccess),
       take(1)
     ).subscribe(() => {
-      this.store.dispatch(seleccionarRubro({ rubro: <Rubro>rubroObj }));
+      this.store.dispatch(seleccionarRubro({ rubro: <Rubro<Trayectoria>>rubroObj }));
       this.detectarRubro(); // Para volverme a suscribir de vuelta
     });
   }
