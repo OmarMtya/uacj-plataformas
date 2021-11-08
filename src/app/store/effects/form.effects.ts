@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { of } from 'rxjs';
+import { Action } from '@ngrx/store';
+import { Observable, of } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { Periodo } from 'src/app/models/periodo.model';
+import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
 import { TrayectoriaEscolarService } from 'src/app/services/trayectoria-escolar.service';
 import * as appActions from '../actions/form.actions';
 
@@ -12,17 +14,26 @@ import * as appActions from '../actions/form.actions';
 export class FormEffects {
   constructor(
     private actions$: Actions,
-    private trayectoria: TrayectoriaEscolarService
+    private trayectoria: TrayectoriaEscolarService,
+    private desarrollo: DesarrolloInstitucionalService
   ) { }
 
   getPeriodos$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(appActions.getPeriodos),
-      switchMap(({ rubro }) =>
-        this.trayectoria.getPeriodos(rubro).pipe(
-          map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
-          catchError(error => of(appActions.getPeriodosFailure({ error }))))
-      ),
+      switchMap(({ rubro, plataforma }) => {
+        if (plataforma == 'trayectoria') {
+          return this.trayectoria.getPeriodos(rubro).pipe(
+            map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
+            catchError(error => of(appActions.getPeriodosFailure({ error }))))
+        } else {
+          console.log("entre y retorno");
+          return (<Observable<any>>of([{ "desc": "2020" }])).pipe(
+            map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
+            catchError(error => of(appActions.getPeriodosFailure({ error })))
+          );
+        }
+      }),
     );
   });
 

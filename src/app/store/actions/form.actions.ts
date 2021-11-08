@@ -6,61 +6,61 @@ import { Periodo } from "src/app/models/periodo.model";
 import { Programa } from "src/app/models/programas.model";
 
 export const getPeriodos = createAction(
-  '[Trayectoria] Get Periodos',
-  props<{ rubro: Rubro<Trayectoria | Desarrollo> }>()
+  '[Form] Get Periodos',
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, plataforma: 'trayectoria' | 'desarrollo' }>()
 );
 
 export const getPeriodosSuccess = createAction(
-  '[Trayectoria] Get Periodos Success',
+  '[Form] Get Periodos Success',
   props<{ periodos: Periodo[] }>()
 );
 
 export const getPeriodosFailure = createAction(
-  '[Trayectoria] Get Periodos Failure',
+  '[Form] Get Periodos Failure',
   props<{ error: any }>()
 );
 
 export const getCampus = createAction(
-  '[Trayectoria] Get Campus',
+  '[Form] Get Campus',
   props<{ rubro: Rubro<Trayectoria>, periodo: string }>()
 );
 
 export const getCampusSuccess = createAction(
-  '[Trayectoria] Get Campus Success',
+  '[Form] Get Campus Success',
   props<{ campus: Campus[] }>()
 );
 
 export const getCampusFailure = createAction(
-  '[Trayectoria] Get Campus Failure',
+  '[Form] Get Campus Failure',
   props<{ error: any }>()
 );
 
 export const getNiveles = createAction(
-  '[Trayectoria] Get Niveles',
-  props<{ rubro: Rubro<Trayectoria>, periodo: string, campus: string }>()
+  '[Form] Get Niveles',
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, plataforma: 'trayectoria' | 'desarrollo' }>()
 );
 
 export const getNivelesSuccess = createAction(
-  '[Trayectoria] Get Niveles Success',
+  '[Form] Get Niveles Success',
   props<{ niveles: Nivel[] }>()
 );
 
 export const getNivelesFailure = createAction(
-  '[Trayectoria] Get Niveles Failure',
+  '[Form] Get Niveles Failure',
   props<{ error: any }>()
 );
 
 export const getProgramas = createAction(
-  '[Trayectoria] Get Programas',
-  props<{ rubro: Rubro<Trayectoria>, periodo: string, campus: string, nivel: string }>()
+  '[Form] Get Programas',
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, plataforma: 'trayectoria' | 'desarrollo' }>()
 );
 
 export const getProgramasSuccess = createAction(
-  '[Trayectoria] Get Programas Success',
+  '[Form] Get Programas Success',
   props<{ programas: Programa[] }>()
 );
 
 export const getProgramasFailure = createAction(
-  '[Trayectoria] Get Programas Failure',
+  '[Form] Get Programas Failure',
   props<{ error: any }>()
 );

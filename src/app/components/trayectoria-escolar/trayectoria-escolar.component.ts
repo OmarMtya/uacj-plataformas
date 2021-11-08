@@ -73,7 +73,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   detectarRubro() {
     this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro<Trayectoria>) => this.rubroSeleccionado = rubro);
 
-    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
+    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'trayectoria' }));
 
     this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => {
       console.log("ENTRO SOLO UNA VEZ");
@@ -98,8 +98,8 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
 
       of(
         this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value })),
-        this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value })),
-        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }))
+        this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'trayectoria' })),
+        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value, plataforma: 'trayectoria' }))
       ).pipe(take(1)).subscribe(() => {
         this.suscribirme();
       });
@@ -127,10 +127,10 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
         programa: 'Todos',
       });
 
-      this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
+      this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'trayectoria' }));
       this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value }));
-      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value }));
-      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }));
+      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'trayectoria' }));
+      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value, plataforma: 'trayectoria' }));
     });
 
 
@@ -168,7 +168,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     });
 
     this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((campus: string) => {
-      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus }));
+      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus, plataforma: 'trayectoria' }));
 
       this.form.patchValue({
         nivel: null,
@@ -180,7 +180,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     });
 
     this.getSubscripcionForm('nivel').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((nivel: string) => {
-      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel }));
+      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel, plataforma: 'trayectoria' }));
 
       this.form.patchValue({
         programa: null,
@@ -223,7 +223,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     rubro.classList.add('activo');
     this.unsuscribe$.next(); // Me desuscribo de todos lados
 
-    this.store.dispatch(getPeriodos({ rubro: <Rubro<Trayectoria>>rubroObj }));
+    this.store.dispatch(getPeriodos({ rubro: <Rubro<Trayectoria>>rubroObj, plataforma: 'trayectoria' }));
 
     this.actions$.pipe(
       ofType(getPeriodosSuccess),

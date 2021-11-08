@@ -93,7 +93,7 @@ export class TrayectoriaEscolarService {
   }
 
   private getRuta(ruta?: string) {
-    return `${environment.server}${ruta ? ruta : ''}`
+    return `${environment.server('te')}${ruta ? ruta : ''}`
   }
 
   private llenarTablas(rubro: Rubro<Trayectoria | Desarrollo>) {

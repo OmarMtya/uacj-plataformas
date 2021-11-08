@@ -56,7 +56,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     rubro.classList.add('activo');
     this.unsuscribe$.next(); // Me desuscribo de todos lados
 
-    this.store.dispatch(getPeriodos({ rubro: <Rubro<Desarrollo>>rubroObj }));
+    this.store.dispatch(getPeriodos({ rubro: <Rubro<Desarrollo>>rubroObj, plataforma: 'desarrollo' }));
 
     this.actions$.pipe(
       ofType(getPeriodosSuccess),
@@ -70,7 +70,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   detectarRubro() {
     this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro<Trayectoria>) => this.rubroSeleccionado = rubro);
 
-    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado }));
+    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' }));
 
     this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => {
       console.log("ENTRO SOLO UNA VEZ");
@@ -95,8 +95,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
 
       of(
         this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value })),
-        this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value })),
-        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value }))
+        this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'desarrollo' })),
+        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value, plataforma: 'desarrollo' }))
       ).pipe(take(1)).subscribe(() => {
         this.suscribirme();
       });
