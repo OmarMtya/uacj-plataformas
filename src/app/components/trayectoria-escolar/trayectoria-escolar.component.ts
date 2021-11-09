@@ -42,8 +42,6 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
 
   form: FormGroup;
 
-  formularioVirgen = true;
-
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
@@ -63,6 +61,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   ngOnInit() {
+    this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado }));
     this.detectarRubro();
   }
 
@@ -97,7 +96,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
       }));
 
       of(
-        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value })),
+        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'trayectoria' })),
         this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'trayectoria' })),
         this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value, plataforma: 'trayectoria' }))
       ).pipe(take(1)).subscribe(() => {
@@ -128,7 +127,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
       });
 
       this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'trayectoria' }));
-      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value }));
+      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'trayectoria' }));
       this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'trayectoria' }));
       this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, nivel: this.form.get('nivel').value, plataforma: 'trayectoria' }));
     });
@@ -155,7 +154,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
      */
 
     this.getSubscripcionForm('periodo').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((periodo: string) => {
-      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo }));
+      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo, plataforma: 'trayectoria' }));
       this.form.patchValue({
         campus: null,
         nivel: null,
@@ -164,7 +163,6 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
 
       this.form.get('nivel').disable();
       this.form.get('programa').disable();
-      this.formularioVirgen = false;
     });
 
     this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((campus: string) => {

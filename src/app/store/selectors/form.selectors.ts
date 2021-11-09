@@ -8,6 +8,11 @@ export const getCampus = createSelector(
   (state: FormState) => state.campus
 );
 
+export const getDepartamentos = createSelector(
+  getFormState,
+  (state: FormState) => state.departamentos
+);
+
 export const getPeriodos = createSelector(
   getFormState,
   (state: FormState) => state.periodos

@@ -22,17 +22,9 @@ export class FormEffects {
     return this.actions$.pipe(
       ofType(appActions.getPeriodos),
       switchMap(({ rubro, plataforma }) => {
-        if (plataforma == 'trayectoria') {
-          return this.trayectoria.getPeriodos(rubro).pipe(
-            map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
-            catchError(error => of(appActions.getPeriodosFailure({ error }))))
-        } else {
-          console.log("entre y retorno");
-          return (<Observable<any>>of([{ "desc": "2020" }])).pipe(
-            map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
-            catchError(error => of(appActions.getPeriodosFailure({ error })))
-          );
-        }
+        return this.getService(plataforma).getPeriodos(rubro).pipe(
+          map((data: Periodo[]) => appActions.getPeriodosSuccess({ periodos: data })),
+          catchError(error => of(appActions.getPeriodosFailure({ error }))))
       }),
     );
   });
@@ -40,9 +32,9 @@ export class FormEffects {
   getCampus = createEffect(() => {
     return this.actions$.pipe(
       ofType(appActions.getCampus),
-      switchMap(({ rubro, periodo }) =>
-        this.trayectoria.getCampus(rubro, periodo).pipe(
-          map((data: any) => appActions.getCampusSuccess({ campus: data })),
+      switchMap(({ rubro, periodo, plataforma }) =>
+        this.getService(plataforma).getCampus(rubro, periodo).pipe(
+          map((data: any[]) => appActions.getCampusSuccess({ campus: data })),
           catchError(error => of(appActions.getCampusFailure({ error }))))
       ),
     );
@@ -53,7 +45,7 @@ export class FormEffects {
       ofType(appActions.getNiveles),
       switchMap(({ rubro, periodo, campus }) =>
         this.trayectoria.getNiveles(rubro, periodo, campus).pipe(
-          map((data: any) => appActions.getNivelesSuccess({ niveles: data })),
+          map((data: any[]) => appActions.getNivelesSuccess({ niveles: data })),
           catchError(error => of(appActions.getNivelesFailure({ error }))))
       ),
     );
@@ -62,12 +54,33 @@ export class FormEffects {
   getProgramas = createEffect(() => {
     return this.actions$.pipe(
       ofType(appActions.getProgramas),
-      switchMap(({ rubro, periodo, campus, nivel }) =>
-        this.trayectoria.getProgramas(rubro, periodo, campus, nivel).pipe(
-          map((data: any) => appActions.getProgramasSuccess({ programas: data })),
+      switchMap(({ rubro, periodo, campus, nivel, plataforma, departamento }) =>
+        // En desarrollo no le pasan periodo, solamente utilizan 2020, van a tener un gran problema cuando quieran agregar otro periodo. Lo correcto sería haber aceptado el periodo aunque siempre sea el mismo, permitiría el procesado dinámico de distintos periodos
+        (plataforma == 'trayectoria' ? this.trayectoria.getProgramas(rubro, periodo, campus, nivel) : this.desarrollo.getProgramas(rubro, campus, departamento)).pipe(
+          map((data: any[]) => appActions.getProgramasSuccess({ programas: data })),
           catchError(error => of(appActions.getProgramasFailure({ error }))))
       ),
     );
   });
+
+  getDepartamentos$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(appActions.getDepartamentos),
+      switchMap(({ rubro, campus }) =>
+        this.desarrollo.getDepartamentos(rubro, campus).pipe(
+          map((data: any[]) => appActions.getDepartamentosSuccess({ departamentos: data })),
+          catchError(error => of(appActions.getDepartamentosFailure({ error }))))
+      ),
+    );
+  });
+
+  getService(servicio: 'trayectoria' | 'desarrollo') {
+    switch (servicio) {
+      case 'trayectoria':
+        return this.trayectoria;
+      case 'desarrollo':
+        return this.desarrollo;
+    }
+  }
 
 }

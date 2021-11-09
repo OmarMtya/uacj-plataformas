@@ -1,5 +1,6 @@
 import { createReducer, on, State } from '@ngrx/store';
 import { Campus } from 'src/app/models/campus.model';
+import { Departamento } from 'src/app/models/departamento.model';
 import { Nivel } from 'src/app/models/nivel.model';
 import { Periodo } from 'src/app/models/periodo.model';
 import { Programa } from 'src/app/models/programas.model';
@@ -10,13 +11,15 @@ export interface FormState {
   campus: Campus[];
   niveles: Nivel[];
   programas: Programa[];
+  departamentos: Departamento[];
 };
 
 const initialState: FormState = {
-    periodos: [],
-    campus: [],
-    niveles: [],
-    programas: []
+  periodos: [],
+  campus: [],
+  niveles: [],
+  programas: [],
+  departamentos: []
 };
 
 export const formreducer = createReducer(
@@ -96,4 +99,18 @@ export const formreducer = createReducer(
     cargando: false,
     error: { ...error },
   })),
+  on(form.getDepartamentos, (state) => ({
+    ...state,
+    cargando: true,
+    error: null
+  })),
+  on(form.getDepartamentosSuccess, (state, { departamentos }) => ({
+    ...state,
+    departamentos: [...departamentos],
+    cargando: false
+  })),
+  on(form.getDepartamentosFailure, (state, { error }) => ({
+    ...state,
+    error: { ...error }
+  }))
 );
