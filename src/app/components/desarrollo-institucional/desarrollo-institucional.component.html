@@ -22,11 +22,40 @@
       </div>
     </div>
 
-    <ng-container *ngIf="consulta">
-      <div *ngFor="let consulta of consulta">
-        {{consulta.consulta}}
+    <div *ngIf="consulta" class="grid grid-cols-2 sm:grid-cols-1 gap-4">
+      <div *ngFor="let consulta of consulta" class="">
+        <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
+          <div class="text-center">
+            Comentarios
+          </div>
+          <div *ngFor="let comentario of consulta.resultado"
+            class="flex border-gray-300 border rounded-md mb-4 p-2 pt-3">
+
+            <div class="imagen flex-grow-0">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                style="height: 30px; width: 30px" class="rounded-full">
+            </div>
+            <div class="contenido flex-grow ml-3">
+              <div class="font-bold">
+                {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
+              </div>
+              <!-- <div>
+                {{comentario.Sexo}}
+              </div> -->
+              <div class="mt-2">
+                {{comentario.Comentario}}
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #elseComentarios>
+          <div class="text-center">
+            {{consulta.consulta | removeUnderscore | titlecase}}
+          </div>
+          <chart [type]="type" [data]="consulta.data" [options]="options"></chart>
+        </ng-template>
       </div>
-    </ng-container>
+    </div>
 
   </div>
 

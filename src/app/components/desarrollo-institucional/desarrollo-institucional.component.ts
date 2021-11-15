@@ -48,6 +48,24 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
 
+
+
+  type = 'doughnut';
+  data = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [
+      {
+        label: "My First dataset",
+        data: [65, 59, 80, 81, 56, 55, 40]
+      }
+    ]
+  };
+  options = {
+    responsive: true,
+    maintainAspectRatio: false
+  };
+
+
   constructor(
     private store: Store<AppState>,
     private fb: FormBuilder,
@@ -121,8 +139,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
             this.form.get('departamento').value,
             this.form.get('programa').value,
           ).pipe(take(1)).subscribe((x) => {
+            this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);
             console.log("VENDE", x);
-            this.consulta = x;
           });
         });
 
@@ -259,11 +277,17 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     });
   }
 
-  generarTarjetas() {
-
+  generarGrafica(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {
+    return {
+      labels: consulta.resultado.map(x => x.serie),
+      datasets: [{
+        label: "Prueba",
+        data: consulta.resultado.map(x => x.cantidad),
+        backgroundColor: ["#CCF5AC", "#7E2E84", "#EF798A", "#7E2E84", "#D14081", "#4DA167", "#A9E4EF", "#DDC9B4", "#44355B", "#EE5622"]
+      }]
+    };
   }
 
   ionViewDidLeave(): void {
   }
-
 }

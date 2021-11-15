@@ -18,6 +18,7 @@ import { SharedModule } from './components/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
+import { ChartModule } from 'angular2-chartjs';
 
 @NgModule({
   declarations: [AppComponent],
@@ -37,6 +38,7 @@ import { DesarrolloInstitucionalModule } from './components/desarrollo-instituci
     StoreRouterConnectingModule.forRoot(),
     SharedModule,
     ReactiveFormsModule,
+    ChartModule,
     DesarrolloInstitucionalModule // Marca un error si no lo importas en el módulo principal
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

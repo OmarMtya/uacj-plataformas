@@ -10,32 +10,57 @@ import { Desarrollo, Rubro, Trayectoria } from '../interfaces/rubro.interface';
 })
 export class DesarrolloInstitucionalService {
 
-  tipos_consultas = [
-    'estado_civil',
-    'sexo',
-    'lugar_origen',
-    'dependientes_economicos',
-    'beca',
-    'beca_tipo',
-    'estancia_academica',
-    'estancia_academica_tipo',
-    'estancia_academica_apoyo',
-    'estancia_academica_destino',
-    'servicio_social',
-    'practicas_profesionales',
-    'estudio_interrumpido',
-    'estudio_interrumpido_tipo',
-    'trabajo_actual',
-    'trabajo_acutal_sector',
-    'trabajo_acutal_tipo_contrato',
-    'trabajo_acutal_relacion_carrera',
-    'trabajo_acutal_ingreso_mensual',
-    'trabajo_estudio',
-    'evaluacion_plan',
-    'comentarios',
-    'escoger_uacj',
-    'estudiar_posgrado_uacj',
-  ];
+  tipos_consultas:
+    ('estado_civil' |
+      'sexo' |
+      'lugar_origen' |
+      'dependientes_economicos' |
+      'beca' |
+      'beca_tipo' |
+      'estancia_academica' |
+      'estancia_academica_tipo' |
+      'estancia_academica_apoyo' |
+      'estancia_academica_destino' |
+      'servicio_social' |
+      'practicas_profesionales' |
+      'estudio_interrumpido' |
+      'estudio_interrumpido_tipo' |
+      'trabajo_actual' |
+      'trabajo_acutal_sector' |
+      'trabajo_acutal_tipo_contrato' |
+      'trabajo_acutal_relacion_carrera' |
+      'trabajo_acutal_ingreso_mensual' |
+      'trabajo_estudio' |
+      'evaluacion_plan' |
+      'comentarios' |
+      'escoger_uacj' |
+      'estudiar_posgrado_uacj')[]
+    = [
+      'estado_civil',
+      'sexo',
+      'lugar_origen',
+      'dependientes_economicos',
+      'beca',
+      'beca_tipo',
+      'estancia_academica',
+      'estancia_academica_tipo',
+      'estancia_academica_apoyo',
+      'estancia_academica_destino',
+      'servicio_social',
+      'practicas_profesionales',
+      'estudio_interrumpido',
+      'estudio_interrumpido_tipo',
+      'trabajo_actual',
+      'trabajo_acutal_sector',
+      'trabajo_acutal_tipo_contrato',
+      'trabajo_acutal_relacion_carrera',
+      'trabajo_acutal_ingreso_mensual',
+      'trabajo_estudio',
+      'evaluacion_plan',
+      'comentarios',
+      'escoger_uacj',
+      'estudiar_posgrado_uacj',
+    ];
 
   constructor(
     private http: HttpClient
@@ -58,7 +83,30 @@ export class DesarrolloInstitucionalService {
   }
 
   getConsultas(rubro: Rubro<Trayectoria | Desarrollo>, campus: string, departamento: string, programa: string) {
-    return forkJoin(this.tipos_consultas.map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${campus}/${departamento}/${programa}`).pipe(map((x) => ({ consulta, resultado: x })))));
+    return forkJoin(this.tipos_consultas.map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${campus}/${departamento}/${programa}`).pipe(map((x: any[]) => {
+      switch (consulta) { // Debido a que los datos que devuelve el backend son diferentes, se hace un switch para cada consulta diferente, para que quede genérico
+        case 'sexo':
+          return ({
+            consulta, resultado: [
+              {
+                serie: 'Hombres',
+                cantidad: x[0].hombres
+              },
+              {
+                serie: 'Mujeres',
+                cantidad: x[0].mujeres
+              },
+            ]
+          });
+        case 'evaluacion_plan':
+          return ({ consulta, resultado: x[0] });
+        case 'comentarios':
+          return ({ consulta, resultado: x });
+        default:
+          return ({ consulta, resultado: x });
+      }
+
+    }))));
   }
 
   private getRuta(ruta?: string) {
