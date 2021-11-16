@@ -140,7 +140,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
             this.form.get('programa').value,
           ).pipe(take(1)).subscribe((x) => {
             this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);
-            console.log("VENDE", x);
           });
         });
 
@@ -210,7 +209,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     });
 
     this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((campus: string) => {
-      this.store.dispatch(getNiveles({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus, plataforma: 'desarrollo' }));
+      this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo', campus: campus }));
 
       this.form.patchValue({
         departamento: null,
@@ -238,7 +237,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
         this.form.get('departamento').value,
         this.form.get('programa').value,
       ).pipe(take(1)).subscribe((x) => {
-        this.consulta = x;
+        this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
       });
     });
   }
