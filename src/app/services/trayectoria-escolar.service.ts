@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Desarrollo, Rubro } from '../interfaces/rubro.interface';
@@ -21,7 +21,32 @@ export class TrayectoriaEscolarService {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_periodos`);
   }
 
-  getCampus(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string) {
+  getCampus(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string): Observable<any> {
+    if (rubro == 'seguimiento2') {
+      return of(([
+        {
+          "desc": "DMNCG"
+        },
+        {
+          "desc": "DMC"
+        },
+        {
+          "desc": "DMCU"
+        },
+        {
+          "desc": "IADA"
+        },
+        {
+          "desc": "ICB"
+        },
+        {
+          "desc": "ICSA"
+        },
+        {
+          "desc": "IIT"
+        }
+      ]));
+    }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
   }
 

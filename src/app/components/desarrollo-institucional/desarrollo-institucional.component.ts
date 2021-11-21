@@ -48,14 +48,11 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
 
-
-
   type = 'doughnut';
   options = {
     responsive: true,
     maintainAspectRatio: false
   };
-
 
   constructor(
     private store: Store<AppState>,
@@ -72,7 +69,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("o esoy entrando");
+    console.log("o esoy entrando", this.rubroSeleccionado);
 
     this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
     this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
@@ -93,6 +90,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     this.store.pipe(select(formSelectors.getProgramas)).pipe().subscribe((x) => {
       this.programas = x;
     });
+    this.store.pipe(select(getRubro)).pipe().subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
+
   }
 
   ngOnDestroy(): void {
@@ -100,55 +99,56 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   }
 
   detectarRubro() {
-    this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro);
-
-    this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => { // Toda la suscripción se basa en los periodos, en este caso siempre son 2020
-      this.form.patchValue({ // Pongo el periodo por default, y los demás en Todos, no emito el evento para evitar las suscripciones
-        periodo: periodos[0].desc,
-        departamento: 'Todos',
-        programa: 'Todos',
-      }, {
-        emitEvent: false,
-        onlySelf: true
-      });
-
-      this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' })); // Me traigo los campus, basandome en los valores de arriba: Todos
-
-      this.actions$.pipe( // Es como si estuviera haciendo un resolve de la suscripcion anterior. Me trae tdoso los campus
-        ofType(getCampusSuccess),
-        take(1)
-      ).subscribe(({ campus }) => {
-        this.form.patchValue({
-          campus: campus[0].desc // Pongo como campus el primero, ya que no tiene "Todos"
+    setTimeout(() => {
+      this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => { // Toda la suscripción se basa en los periodos, en este caso siempre son 2020
+        this.form.patchValue({ // Pongo el periodo por default, y los demás en Todos, no emito el evento para evitar las suscripciones
+          periodo: periodos[0].desc,
+          departamento: 'Todos',
+          programa: 'Todos',
+        }, {
+          emitEvent: false,
+          onlySelf: true
         });
+        console.log(this.rubroSeleccionado);
 
-        of(
-          this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo' })),
-          this.store.dispatch(getProgramas({
-            rubro: this.rubroSeleccionado,
-            periodo: this.form.get('periodo').value,
-            campus: campus[0].desc,
-            departamento: this.form.get('departamento').value,
-            plataforma: 'desarrollo'
-          }))
-        ).pipe(take(1)).subscribe(() => {
-          this.suscribirmeCambiosFormularios(); // Me suscribo a los cambios de los formularios, para volver a ejecutar la consulta
+        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' })); // Me traigo los campus, basandome en los valores de arriba: Todos
 
-          // ! Me traigo la consulta por default
-          this.desarrolloService.getConsultas( // Me traigo el valor
-            this.rubroSeleccionado,
-            this.form.get('campus').value,
-            this.form.get('departamento').value,
-            this.form.get('programa').value,
-          ).pipe(take(1)).subscribe((x) => {
-            this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+        this.actions$.pipe( // Es como si estuviera haciendo un resolve de la suscripcion anterior. Me trae tdoso los campus
+          ofType(getCampusSuccess),
+          take(1)
+        ).subscribe(({ campus }) => {
+          console.log("ESTOS SON LOS CAMPUS", campus);
+
+          this.form.patchValue({
+            campus: campus[0].desc // Pongo como campus el primero, ya que no tiene "Todos"
           });
+
+          of(
+            this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo' })),
+            this.store.dispatch(getProgramas({
+              rubro: this.rubroSeleccionado,
+              periodo: this.form.get('periodo').value,
+              campus: campus[0].desc,
+              departamento: this.form.get('departamento').value,
+              plataforma: 'desarrollo'
+            }))
+          ).pipe(take(1)).subscribe(() => {
+            this.suscribirmeCambiosFormularios(); // Me suscribo a los cambios de los formularios, para volver a ejecutar la consulta
+
+            // ! Me traigo la consulta por default
+            this.desarrolloService.getConsultas( // Me traigo el valor
+              this.rubroSeleccionado,
+              this.form.get('campus').value,
+              this.form.get('departamento').value,
+              this.form.get('programa').value,
+            ).pipe(take(1)).subscribe((x) => {
+              this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+            });
+          });
+
         });
-
       });
-
-
-    });
+    }, 1);
   }
 
   traerInformacionFormularios() {
@@ -225,6 +225,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
         this.form.get('departamento').value,
         this.form.get('programa').value,
       ).pipe(take(1)).subscribe((x) => {
+        console.log("No entro aquí gracias a dios");
+
         this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
       });
     });
@@ -248,22 +250,20 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   // }
 
   clickRubro(rubro: HTMLElement, rubroObj: string) {
-
     document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo')); // Quita a todos la clase de activo
     this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' }); // Hace scroll al elemento para poder verlo en el centro
     rubro.classList.add('activo'); // Le pone la clase de activo al elemento seleccionado
-    // this.unsuscribe$.next(); //! Me desuscribo de todos lados
+    this.unsuscribe$.next(); //! Me desuscribo de todos lados
     this.actions$.pipe( // Lo pongo antes para que se ejecute después de que se cambie el rubro
       ofType(getPeriodosSuccess),
       take(1)
     ).subscribe(() => {
       console.log("No estoy entrando");
       this.store.dispatch(seleccionarRubro({ rubro: <Rubro<Desarrollo>>rubroObj })); // Lo pone en el reducer
+      this.store.pipe(select(getRubro)).pipe(take(1)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
       this.detectarRubro(); // Para volverme a suscribir de vuelta
     });
     this.store.dispatch(getPeriodos({ rubro: <Rubro<Desarrollo>>rubroObj, plataforma: 'desarrollo' })); // Me tengo que traer los elementos de la plataforma desarrollo
-    console.log("ENTRO HIJO DE SU PUTA MADRE");
-
   }
 
   generarGrafica(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {

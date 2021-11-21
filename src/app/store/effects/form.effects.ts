@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { Periodo } from 'src/app/models/periodo.model';
 import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
 import { TrayectoriaEscolarService } from 'src/app/services/trayectoria-escolar.service';
@@ -34,7 +34,10 @@ export class FormEffects {
       ofType(appActions.getCampus),
       switchMap(({ rubro, periodo, plataforma }) =>
         this.getService(plataforma).getCampus(rubro, periodo).pipe(
-          map((data: any[]) => appActions.getCampusSuccess({ campus: data })),
+          map((data: any[]) => {
+            console.log(data);
+            return appActions.getCampusSuccess({ campus: data });
+          }),
           catchError(error => of(appActions.getCampusFailure({ error }))))
       ),
     );
