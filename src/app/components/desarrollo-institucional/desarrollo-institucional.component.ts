@@ -5,7 +5,7 @@ import { ViewDidEnter, ViewDidLeave, ViewWillLeave } from '@ionic/angular';
 import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { forkJoin, of, Subject, Subscription } from 'rxjs';
-import { filter, take, takeUntil } from 'rxjs/operators';
+import { concatMap, filter, take, takeUntil } from 'rxjs/operators';
 import { Desarrollo, Desarrollos, Rubro, Trayectoria, Trayectorias } from 'src/app/interfaces/rubro.interface';
 import { Campus } from 'src/app/models/campus.model';
 import { Consulta } from 'src/app/models/consulta.model';
@@ -20,6 +20,7 @@ import * as formSelectors from 'src/app/store/selectors/form.selectors';
 import * as trayectoriaSelectors from 'src/app/store/selectors/trayectoria.selectors';
 import { Departamento } from 'src/app/models/departamento.model';
 import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
+import { Nivel } from 'src/app/models/nivel.model';
 
 @Component({
   selector: 'app-desarrollo-institucional',
@@ -37,6 +38,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   campus: Campus[] = [];
   programas: Programa[] = [];
   departamentos: Departamento[] = [];
+  niveles: Nivel[] = [];
   consulta: any[]; // Como son demasiadas consultas y no tiene un solo formato, es necesario ponerlo como un arreglo de Any
   rubrosDisponibles: string[] = Desarrollos;
 
@@ -65,12 +67,11 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
       campus: new FormControl(null, []),
       departamento: new FormControl(null, []),
       programa: new FormControl(null, []),
+      nivel: new FormControl(null, []),
     });
   }
 
   ngOnInit() {
-    console.log("o esoy entrando", this.rubroSeleccionado);
-
     this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
     this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
     this.detectarRubro(); // Emula un click en el rubro padron_licenciatura
@@ -90,6 +91,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     this.store.pipe(select(formSelectors.getProgramas)).pipe().subscribe((x) => {
       this.programas = x;
     });
+    this.store.pipe(select(formSelectors.getNiveles)).pipe().subscribe((x) => {
+      this.niveles = x;
+    });
     this.store.pipe(select(getRubro)).pipe().subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
 
   }
@@ -100,6 +104,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
 
   detectarRubro() {
     setTimeout(() => {
+
       this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => { // Toda la suscripción se basa en los periodos, en este caso siempre son 2020
         this.form.patchValue({ // Pongo el periodo por default, y los demás en Todos, no emito el evento para evitar las suscripciones
           periodo: periodos[0].desc,
@@ -109,21 +114,19 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
           emitEvent: false,
           onlySelf: true
         });
-        console.log(this.rubroSeleccionado);
-
-        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' })); // Me traigo los campus, basandome en los valores de arriba: Todos
 
         this.actions$.pipe( // Es como si estuviera haciendo un resolve de la suscripcion anterior. Me trae tdoso los campus
           ofType(getCampusSuccess),
           take(1)
         ).subscribe(({ campus }) => {
-          console.log("ESTOS SON LOS CAMPUS", campus);
+          console.log("ME TRAIGO EL SUCCESS O NO");
+
 
           this.form.patchValue({
             campus: campus[0].desc // Pongo como campus el primero, ya que no tiene "Todos"
           });
 
-          of(
+          let objetos = of(
             this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo' })),
             this.store.dispatch(getProgramas({
               rubro: this.rubroSeleccionado,
@@ -132,7 +135,22 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
               departamento: this.form.get('departamento').value,
               plataforma: 'desarrollo'
             }))
-          ).pipe(take(1)).subscribe(() => {
+          );
+
+          // if (this.form.get('nivel').value != null) {
+          //   objetos = objetos.pipe(
+          //     concatMap(() => of(
+          //       this.store.dispatch(getNiveles({
+          //         rubro: this.rubroSeleccionado,
+          //         periodo: this.form.get('periodo').value,
+          //         campus: campus[0].desc,
+          //         plataforma: 'desarrollo'
+          //       }))
+          //     ))
+          //   );
+          // }
+
+          objetos.pipe(take(1)).subscribe(() => {
             this.suscribirmeCambiosFormularios(); // Me suscribo a los cambios de los formularios, para volver a ejecutar la consulta
 
             // ! Me traigo la consulta por default
@@ -147,6 +165,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
           });
 
         });
+
+        this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' })); // Me traigo los campus, basandome en los valores de arriba: Todos
+
       });
     }, 1);
   }
@@ -257,8 +278,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     this.actions$.pipe( // Lo pongo antes para que se ejecute después de que se cambie el rubro
       ofType(getPeriodosSuccess),
       take(1)
-    ).subscribe(() => {
-      console.log("No estoy entrando");
+    ).subscribe(({ periodos }) => {
+      console.log("No estoy entrando", periodos);
       this.store.dispatch(seleccionarRubro({ rubro: <Rubro<Desarrollo>>rubroObj })); // Lo pone en el reducer
       this.store.pipe(select(getRubro)).pipe(take(1)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
       this.detectarRubro(); // Para volverme a suscribir de vuelta
