@@ -61,8 +61,8 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   ngOnInit() {
-    this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado }));
-    this.detectarRubro();
+    // this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado }));
+    // this.detectarRubro();
   }
 
   ngOnDestroy(): void {
@@ -211,12 +211,16 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   ionViewDidEnter(): void {
+    // this.store.dispatch(seleccionarRubro({ rubro: 'matricula' }));
+    this.localizarRubro(document.querySelector('.matricula'), 'matricula');
   }
 
   localizarRubro(rubro: HTMLElement, rubroObj: string) {
-    document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo'));
-    this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' });
-    rubro.classList.add('activo');
+    if (rubro != null) {
+      document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo'));
+      this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' });
+      rubro.classList.add('activo');
+    }
     this.unsuscribe$.next(); // Me desuscribo de todos lados
 
     this.store.dispatch(getPeriodos({ rubro: <Rubro<Trayectoria>>rubroObj, plataforma: 'trayectoria' }));

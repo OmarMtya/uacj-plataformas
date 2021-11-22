@@ -27,7 +27,7 @@ import { Nivel } from 'src/app/models/nivel.model';
   templateUrl: './desarrollo-institucional.component.html',
   styleUrls: ['./desarrollo-institucional.component.css']
 })
-export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
+export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, ViewDidEnter {
 
 
   @Input() name: string;
@@ -49,6 +49,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
+  leave$ = new Subject();
 
   type = 'doughnut';
   options = {
@@ -72,33 +73,36 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
-    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
-    this.llenarFormulariosDatosDinamicos(); // Emula un click en el rubro padron_licenciatura
-
+    // this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
+    // this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
+    // this.llenarFormulariosDatosDinamicos(); // Emula un click en el rubro padron_licenciatura
     /**
      * Suscripciones para los cambios de periodos, campus, niveles y programas del store
      */
-    this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0)).subscribe((x) => {
+    this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), takeUntil(this.leave$)).subscribe((x) => {
       this.periodos = x;
     });
-    this.store.pipe(select(formSelectors.getCampus)).pipe().subscribe((x) => {
+    this.store.pipe(select(formSelectors.getCampus)).pipe(takeUntil(this.leave$)).subscribe((x) => {
       this.campus = x;
     });
-    this.store.pipe(select(formSelectors.getDepartamentos)).pipe().subscribe((x) => {
+    this.store.pipe(select(formSelectors.getDepartamentos)).pipe(takeUntil(this.leave$)).subscribe((x) => {
       this.departamentos = x;
     });
-    this.store.pipe(select(formSelectors.getProgramas)).pipe().subscribe((x) => {
+    this.store.pipe(select(formSelectors.getProgramas)).pipe(takeUntil(this.leave$)).subscribe((x) => {
       this.programas = x;
     });
-    this.store.pipe(select(formSelectors.getNiveles)).pipe().subscribe((x) => {
+    this.store.pipe(select(formSelectors.getNiveles)).pipe(takeUntil(this.leave$)).subscribe((x) => {
       this.niveles = x;
     });
-    this.store.pipe(select(getRubro)).pipe().subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
+    this.store.pipe(select(getRubro)).pipe(takeUntil(this.leave$)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
+  }
 
+  ionViewDidEnter(): void {
+    this.clickRubro(document.querySelector('.padron_licenciatura'), 'padron_licenciatura');
   }
 
   ngOnDestroy(): void {
+    this.unsuscribe$.next();
     this.unsuscribe$.next();
   }
 
@@ -236,7 +240,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
         this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, departamento, plataforma: 'desarrollo' }));
       }
 
-
       this.form.patchValue({
         programa: null,
       });
@@ -296,13 +299,14 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   //   this.unsuscribe$.next();
   // }
 
-  // ionViewDidEnter(): void {
-  // }
+
 
   clickRubro(rubro: HTMLElement, rubroObj: string) {
-    document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo')); // Quita a todos la clase de activo
-    this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' }); // Hace scroll al elemento para poder verlo en el centro
-    rubro.classList.add('activo'); // Le pone la clase de activo al elemento seleccionado
+    if (rubro != null) {
+      document.querySelectorAll('.activo').forEach(x => x.classList.remove('activo')); // Quita a todos la clase de activo
+      this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' }); // Hace scroll al elemento para poder verlo en el centro
+      rubro.classList.add('activo'); // Le pone la clase de activo al elemento seleccionado
+    }
     this.unsuscribe$.next(); //! Me desuscribo de todos lados
     this.actions$.pipe( // Lo pongo antes para que se ejecute después de que se cambie el rubro
       ofType(getPeriodosSuccess),
