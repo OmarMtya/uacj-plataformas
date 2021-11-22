@@ -39,6 +39,8 @@ export class DesarrolloInstitucionalService {
           "desc": "IIT"
         }
       ]));
+    } else if (rubro == 'avance_padron_egreso') {
+      return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
     }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus`);
   }
@@ -50,15 +52,25 @@ export class DesarrolloInstitucionalService {
     return (<Observable<{ desc: string }[]>>of([{ "desc": "2020" }]));
   }
 
-  getDepartamentos(rubro: Rubro<Desarrollo | Trayectoria>, campus: string) {
+  getDepartamentos(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, periodo: string) {
+    if (rubro == 'avance_padron_egreso') {
+      return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_departamento/${periodo}/${campus}`);
+    }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}`);
   }
 
-  getProgramas(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, departamento: string) {
+  getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, departamento: string) {
+    if (rubro == 'avance_padron_egreso') {
+      return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_programa/${periodo}/${campus}/${departamento}/${nivel}`);
+    }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}/${departamento}`);
   }
 
-  getConsultas(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, departamento: string, programa: string): Observable<any[]> {
+  getNiveles(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, departamento: string) {
+    return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_nivel/${periodo}/${campus}/${departamento}`);
+  }
+
+  getConsultas(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, departamento: string, programa: string, nivel: string, periodo: string): Observable<any[]> {
 
     let consultasSeleccionadas;
     switch (rubro) {
@@ -169,12 +181,35 @@ export class DesarrolloInstitucionalService {
           'comentarios',
         ];
         break;
-      case 'avance_padron_egreso':
-        consultasSeleccionadas = [
-          'consulta_avance'
-        ];
-        break;
     }
+
+    if (rubro == 'avance_padron_egreso') {
+      return forkJoin([this.http.get<any[]>(`${this.getRuta(`/${rubro}`)}/consulta_avance/${periodo}/${campus}/${departamento}/${nivel}/${programa}`).pipe(map((x) => {
+        if (programa != 'Todos') {
+          return [{
+            consulta: programa,
+            resultado: x[0],
+            original: x
+          }];
+        }
+
+        return x[0].map((y) => ({
+          consulta: y.serie,
+          resultado: [
+            {
+              serie: 'Contestadas',
+              cantidad: y.contestadas
+            },
+            {
+              serie: 'No Contestadas',
+              cantidad: y.no_contestadas
+            }
+          ],
+          original: x
+        }));
+      }))]);
+    }
+
     return forkJoin((consultasSeleccionadas).map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${campus}/${departamento}/${programa}`).pipe(map((x: any[]) => {
       switch (consulta) { // Debido a que los datos que devuelve el backend son diferentes, se hace un switch para cada consulta diferente, para que quede genérico
         case 'sexo':

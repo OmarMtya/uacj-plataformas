@@ -80,18 +80,16 @@
             <option *ngFor="let departamento of departamentos" [value]="departamento.desc">{{ departamento.desc }}
             </option>
           </select>
-          <select formControlName="programa">
-            <option disabled selected [value]="null">Programa</option>
-            <option value="Todos">Todos</option>
-            <option *ngFor="let programa of programas" [value]="programa.desc">{{ programa.desc }}</option>
-          </select>
-
           <select formControlName="nivel">
             <option disabled selected [value]="null">Nivel</option>
             <option value="Todos">Todos</option>
             <option *ngFor="let nivel of niveles" [value]="nivel.desc">{{ nivel.desc }}</option>
           </select>
-
+          <select formControlName="programa">
+            <option disabled selected [value]="null">Programa</option>
+            <option value="Todos">Todos</option>
+            <option *ngFor="let programa of programas" [value]="programa.desc">{{ programa.desc }}</option>
+          </select>
         </form>
       </div>
       <div (click)="showFilters = !showFilters"

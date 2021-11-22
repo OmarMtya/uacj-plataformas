@@ -75,8 +75,6 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'trayectoria' }));
 
     this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => {
-      console.log("ENTRO SOLO UNA VEZ");
-
       this.form.patchValue({
         periodo: periodos[0].desc,
         campus: 'Todos',

@@ -35,7 +35,6 @@ export class FormEffects {
       switchMap(({ rubro, periodo, plataforma }) =>
         this.getService(plataforma).getCampus(rubro, periodo).pipe(
           map((data: any[]) => {
-            console.log(data);
             return appActions.getCampusSuccess({ campus: data });
           }),
           catchError(error => of(appActions.getCampusFailure({ error }))))
@@ -46,8 +45,8 @@ export class FormEffects {
   getNiveles = createEffect(() => {
     return this.actions$.pipe(
       ofType(appActions.getNiveles),
-      switchMap(({ rubro, periodo, campus }) =>
-        this.trayectoria.getNiveles(rubro, periodo, campus).pipe(
+      switchMap(({ rubro, periodo, campus, departamento, plataforma }) =>
+        this.getService(plataforma).getNiveles(rubro, periodo, campus, departamento).pipe(
           map((data: any[]) => appActions.getNivelesSuccess({ niveles: data })),
           catchError(error => of(appActions.getNivelesFailure({ error }))))
       ),
@@ -59,7 +58,7 @@ export class FormEffects {
       ofType(appActions.getProgramas),
       switchMap(({ rubro, periodo, campus, nivel, plataforma, departamento }) =>
         // En desarrollo no le pasan periodo, solamente utilizan 2020, van a tener un gran problema cuando quieran agregar otro periodo. Lo correcto sería haber aceptado el periodo aunque siempre sea el mismo, permitiría el procesado dinámico de distintos periodos
-        (plataforma == 'trayectoria' ? this.trayectoria.getProgramas(rubro, periodo, campus, nivel) : this.desarrollo.getProgramas(rubro, campus, departamento)).pipe(
+        this.getService(plataforma).getProgramas(rubro, periodo, campus, nivel, departamento).pipe(
           map((data: any[]) => appActions.getProgramasSuccess({ programas: data })),
           catchError(error => of(appActions.getProgramasFailure({ error }))))
       ),
@@ -69,8 +68,8 @@ export class FormEffects {
   getDepartamentos$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(appActions.getDepartamentos),
-      switchMap(({ rubro, campus }) =>
-        this.desarrollo.getDepartamentos(rubro, campus).pipe(
+      switchMap(({ rubro, campus, periodo }) =>
+        this.desarrollo.getDepartamentos(rubro, campus, periodo).pipe(
           map((data: any[]) => appActions.getDepartamentosSuccess({ departamentos: data })),
           catchError(error => of(appActions.getDepartamentosFailure({ error }))))
       ),

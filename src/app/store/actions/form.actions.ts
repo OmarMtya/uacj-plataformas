@@ -38,7 +38,7 @@ export const getCampusFailure = createAction(
 
 export const getNiveles = createAction(
   '[Form] Get Niveles',
-  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, plataforma: 'trayectoria' | 'desarrollo' }>()
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, plataforma: 'trayectoria' | 'desarrollo', departamento?: string }>()
 );
 
 export const getNivelesSuccess = createAction(
@@ -68,7 +68,7 @@ export const getProgramasFailure = createAction(
 
 export const getDepartamentos = createAction(
   '[Form] Get Departamentos',
-  props<{ rubro: Rubro<Trayectoria | Desarrollo>, campus: string, plataforma: 'trayectoria' | 'desarrollo' }>()
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, plataforma: 'trayectoria' | 'desarrollo' }>()
 );
 
 export const getDepartamentosSuccess = createAction(

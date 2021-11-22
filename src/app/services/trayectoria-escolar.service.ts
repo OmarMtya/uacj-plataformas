@@ -50,18 +50,17 @@ export class TrayectoriaEscolarService {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
   }
 
-  getNiveles(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string) {
+  getNiveles(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, departamento: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_nivel/${periodo}/${campus}`);
   }
 
-  getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string) {
+  getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, departamento: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_programa/${periodo}/${campus}/${nivel}`);
   }
 
   getConsulta(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, programa: string) {
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_${rubro}/${periodo}/${campus}/${nivel}/${programa}`).pipe(map((x: any) => {
       let rows_tablas = x[0];
-      console.log(rows_tablas);
 
       let tablasFixed = [];
 

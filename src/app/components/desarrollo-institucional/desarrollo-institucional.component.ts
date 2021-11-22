@@ -74,7 +74,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
     this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
-    this.detectarRubro(); // Emula un click en el rubro padron_licenciatura
+    this.llenarFormulariosDatosDinamicos(); // Emula un click en el rubro padron_licenciatura
 
     /**
      * Suscripciones para los cambios de periodos, campus, niveles y programas del store
@@ -102,14 +102,19 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
     this.unsuscribe$.next();
   }
 
-  detectarRubro() {
+  llenarFormulariosDatosDinamicos() {
     setTimeout(() => {
-
+      if (this.rubroSeleccionado == 'avance_padron_egreso') {
+        this.form.get('nivel').enable();
+      } else {
+        this.form.get('nivel').disable();
+      }
       this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => { // Toda la suscripción se basa en los periodos, en este caso siempre son 2020
         this.form.patchValue({ // Pongo el periodo por default, y los demás en Todos, no emito el evento para evitar las suscripciones
           periodo: periodos[0].desc,
           departamento: 'Todos',
           programa: 'Todos',
+          nivel: 'Todos',
         }, {
           emitEvent: false,
           onlySelf: true
@@ -119,15 +124,12 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
           ofType(getCampusSuccess),
           take(1)
         ).subscribe(({ campus }) => {
-          console.log("ME TRAIGO EL SUCCESS O NO");
-
-
           this.form.patchValue({
             campus: campus[0].desc // Pongo como campus el primero, ya que no tiene "Todos"
           });
 
-          let objetos = of(
-            this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo' })),
+          let objeto = of(
+            this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo', periodo: periodos[0].desc })), // Traigo los departamentos
             this.store.dispatch(getProgramas({
               rubro: this.rubroSeleccionado,
               periodo: this.form.get('periodo').value,
@@ -136,21 +138,27 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
               plataforma: 'desarrollo'
             }))
           );
-
-          // if (this.form.get('nivel').value != null) {
-          //   objetos = objetos.pipe(
-          //     concatMap(() => of(
-          //       this.store.dispatch(getNiveles({
-          //         rubro: this.rubroSeleccionado,
-          //         periodo: this.form.get('periodo').value,
-          //         campus: campus[0].desc,
-          //         plataforma: 'desarrollo'
-          //       }))
-          //     ))
-          //   );
-          // }
-
-          objetos.pipe(take(1)).subscribe(() => {
+          if (this.rubroSeleccionado == 'avance_padron_egreso') {
+            objeto = of(
+              this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo', periodo: periodos[0].desc })), // Traigo los departamentos
+              this.store.dispatch(getProgramas({
+                rubro: this.rubroSeleccionado,
+                periodo: this.form.get('periodo').value,
+                campus: campus[0].desc,
+                departamento: this.form.get('departamento').value,
+                plataforma: 'desarrollo',
+                nivel: this.form.get('nivel').value
+              })),
+              this.store.dispatch(getNiveles({
+                rubro: this.rubroSeleccionado,
+                campus: campus[0].desc,
+                periodo: periodos[0].desc,
+                plataforma: 'desarrollo',
+                departamento: this.form.get('departamento').value,
+              }))
+            );
+          }
+          objeto.pipe(take(1)).subscribe(() => {
             this.suscribirmeCambiosFormularios(); // Me suscribo a los cambios de los formularios, para volver a ejecutar la consulta
 
             // ! Me traigo la consulta por default
@@ -159,43 +167,22 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
               this.form.get('campus').value,
               this.form.get('departamento').value,
               this.form.get('programa').value,
+              this.form.get('nivel').value,
+              this.form.get('periodo').value,
             ).pipe(take(1)).subscribe((x) => {
-              this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+              if (this.rubroSeleccionado == 'avance_padron_egreso') {
+                this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
+              } else {
+                this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+              }
             });
           });
 
         });
-
         this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' })); // Me traigo los campus, basandome en los valores de arriba: Todos
-
       });
     }, 1);
   }
-
-  traerInformacionFormularios() {
-    /**
-     * Suscripción al cambio de rubros, se trae periodos, campus, niveles y programas dependiendo del rubro seleccionado
-     */
-    // this.store.pipe(select(getRubro)).pipe(takeUntil(this.unsuscribe$), filter((x) => this.periodos.length != 0)).subscribe((rubro: Rubro<Desarrollo>) => { // ! Vas a tener que hacer un THEN después de obtener periodos
-    //   this.form.patchValue({
-    //     periodo: this.periodos[0].desc,
-    //     campus: 'Todos',
-    //     departamento: 'Todos',
-    //     programa: 'Todos',
-    //   });
-
-    //   this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' }));
-    //   this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' }));
-    //   this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: this.form.get('campus').value, plataforma: 'desarrollo' }));
-    //   this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'desarrollo' }));
-    // });
-
-    this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' }));
-    this.store.dispatch(getCampus({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, plataforma: 'desarrollo' }));
-    this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: this.form.get('campus').value, plataforma: 'desarrollo' }));
-    this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, plataforma: 'desarrollo' }));
-  }
-
 
   /**
    * Le da funcionalidad a los inputs de formularios
@@ -215,10 +202,13 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
 
       this.form.get('departamento').disable();
       this.form.get('programa').disable();
+      if (this.rubroSeleccionado == 'avance_padron_egreso') {
+        this.form.get('nivel').disable();
+      }
     });
 
     this.getSubscripcionForm('campus').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((campus: string) => {
-      this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo', campus: campus }));
+      this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo', campus: campus, periodo: this.form.get('periodo').value }));
 
       this.form.patchValue({
         departamento: null,
@@ -227,10 +217,45 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
 
       this.form.get('departamento').enable();
       this.form.get('programa').disable();
+      if (this.rubroSeleccionado != 'avance_padron_egreso') {
+        this.form.get('nivel').disable();
+      }
     });
 
     this.getSubscripcionForm('departamento').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((departamento: string) => {
-      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, departamento, plataforma: 'desarrollo' }));
+
+      if (this.rubroSeleccionado == 'avance_padron_egreso') {
+        this.store.dispatch(getNiveles({
+          rubro: this.rubroSeleccionado,
+          campus: this.form.get('campus').value,
+          periodo: this.form.get('periodo').value,
+          plataforma: 'desarrollo',
+          departamento: departamento
+        }));
+      } else {
+        this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, departamento, plataforma: 'desarrollo' }));
+      }
+
+
+      this.form.patchValue({
+        programa: null,
+      });
+      if (this.rubroSeleccionado != 'avance_padron_egreso') {
+        this.form.get('nivel').enable();
+        this.form.get('programa').disable();
+      } else {
+        this.form.patchValue({
+          nivel: null,
+        });
+        this.form.get('programa').enable();
+      }
+    });
+
+    this.getSubscripcionForm('nivel').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((nivel: string) => {
+      if (this.rubroSeleccionado != 'avance_padron_egreso') {
+        return;
+      }
+      this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, departamento: this.form.get('departamento').value, plataforma: 'desarrollo', nivel: nivel }));
 
       this.form.patchValue({
         programa: null,
@@ -245,10 +270,14 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
         this.form.get('campus').value,
         this.form.get('departamento').value,
         this.form.get('programa').value,
+        this.form.get('nivel').value,
+        this.form.get('periodo').value,
       ).pipe(take(1)).subscribe((x) => {
-        console.log("No entro aquí gracias a dios");
-
-        this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
+        if (this.rubroSeleccionado == 'avance_padron_egreso') {
+          this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
+        } else {
+          this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
+        }
       });
     });
   }
@@ -279,10 +308,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy {
       ofType(getPeriodosSuccess),
       take(1)
     ).subscribe(({ periodos }) => {
-      console.log("No estoy entrando", periodos);
       this.store.dispatch(seleccionarRubro({ rubro: <Rubro<Desarrollo>>rubroObj })); // Lo pone en el reducer
       this.store.pipe(select(getRubro)).pipe(take(1)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
-      this.detectarRubro(); // Para volverme a suscribir de vuelta
+      this.llenarFormulariosDatosDinamicos(); // Para volverme a suscribir de vuelta
     });
     this.store.dispatch(getPeriodos({ rubro: <Rubro<Desarrollo>>rubroObj, plataforma: 'desarrollo' })); // Me tengo que traer los elementos de la plataforma desarrollo
   }
