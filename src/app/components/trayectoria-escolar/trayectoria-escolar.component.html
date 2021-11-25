@@ -1,7 +1,17 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      <div class="w-full flex container m-auto justify-between">
+        <div>
+          <img src="assets/logo.png" class="h-10">
+        </div>
+        <div class="font-bold">
+          Trayectoria escolar
+        </div>
+        <div>
+          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6"></ion-icon>
+        </div>
+      </div>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,9 +24,9 @@
   </ion-header>
   <div class="container mx-auto p-2 pb-16">
 
-    <div #containerRubros class="flex flex-row overflow-x-auto mb-4 pb-2 container-scrollbar justify-center">
+    <div #containerRubros class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
       <div *ngFor="let rubro of rubrosDisponibles; index as index"
-        class="px-5 text-gray-300 font-thin border-b border-gray-200 pb-2 {{rubro}}" [ngClass]="{'activo': index == 0}"
+        class="px-5 text-gray-300 font-thin pb-2 {{rubro}} cursor-pointer" [ngClass]="{'activo': index == 0}"
         (click)="localizarRubro(rubroElement, rubro)" #rubroElement>
         {{rubro | removeUnderscore | titlecase }}
       </div>
@@ -25,8 +35,8 @@
     <ng-container *ngIf="consulta">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
 
-        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1" [ngClass]="[tarjeta.clase]"
-          *ngFor="let tarjeta of consulta.tarjetas">
+        <div class="card shadow-md rounded-lg p-4 grid grid-rows-3 gap-1 animate__animated animate__fadeInDown"
+          [ngClass]="[tarjeta.clase]" *ngFor="let tarjeta of consulta.tarjetas">
           <ion-icon class="text-2xl" [name]="tarjeta.icono"></ion-icon>
           <div class="font-bold tracking-wide">
             {{tarjeta.titulo}}
@@ -38,7 +48,7 @@
       </div>
 
       <section class="container mx-auto mt-4 text-xs">
-        <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+        <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg animate__animated animate__fadeIn animate__slow">
           <div class="w-full overflow-auto">
             <table class="w-full">
               <thead>

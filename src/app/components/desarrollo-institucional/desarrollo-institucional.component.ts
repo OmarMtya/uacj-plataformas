@@ -21,7 +21,6 @@ import * as trayectoriaSelectors from 'src/app/store/selectors/trayectoria.selec
 import { Departamento } from 'src/app/models/departamento.model';
 import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
 import { Nivel } from 'src/app/models/nivel.model';
-
 @Component({
   selector: 'app-desarrollo-institucional',
   templateUrl: './desarrollo-institucional.component.html',
@@ -51,10 +50,13 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   unsuscribe$ = new Subject();
   leave$ = new Subject();
 
-  type = 'doughnut';
-  options = {
+  type = 'pie';
+  options: any = {
     responsive: true,
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
+    // legend: {
+    //   display: false
+    // }
   };
 
   constructor(
@@ -69,16 +71,11 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       departamento: new FormControl(null, []),
       programa: new FormControl(null, []),
       nivel: new FormControl(null, []),
+      tipoGraficas: new FormControl('bar', []),
     });
   }
 
   ngOnInit() {
-    // this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado })); // Ejecuta la acción para poner padron_licenciatura como default
-    // this.store.dispatch(getPeriodos({ rubro: this.rubroSeleccionado, plataforma: 'desarrollo' })); // Necesito traerme como mínimo los periodos al inicio. Clickrubro se trae nuevamente los periodos
-    // this.llenarFormulariosDatosDinamicos(); // Emula un click en el rubro padron_licenciatura
-    /**
-     * Suscripciones para los cambios de periodos, campus, niveles y programas del store
-     */
     this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), takeUntil(this.leave$)).subscribe((x) => {
       this.periodos = x;
     });
@@ -95,6 +92,29 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.niveles = x;
     });
     this.store.pipe(select(getRubro)).pipe(takeUntil(this.leave$)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
+    this.form.get('tipoGraficas').valueChanges.pipe(takeUntil(this.leave$)).subscribe((tipoGraficas: string) => {
+      this.type = tipoGraficas;
+
+      if (this.type == 'bar' || this.type == 'line' || this.type == 'radar') {
+        console.log("AHI");
+
+        this.options = {
+          responsive: true,
+          maintainAspectRatio: false,
+          legend: {
+            display: false
+          }
+        };
+      } else {
+        this.options = {
+          responsive: true,
+          maintainAspectRatio: false,
+          // legend: {
+          //   display: false
+          // }
+        };
+      }
+    });
   }
 
   ionViewDidEnter(): void {
@@ -205,7 +225,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       });
 
       this.form.get('departamento').disable();
-      this.form.get('programa').disable();
+      // this.form.get('programa').disable();
       if (this.rubroSeleccionado == 'avance_padron_egreso') {
         this.form.get('nivel').disable();
       }
@@ -220,7 +240,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       });
 
       this.form.get('departamento').enable();
-      this.form.get('programa').disable();
+      // this.form.get('programa').disable();
       if (this.rubroSeleccionado != 'avance_padron_egreso') {
         this.form.get('nivel').disable();
       }
@@ -245,7 +265,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       });
       if (this.rubroSeleccionado != 'avance_padron_egreso') {
         this.form.get('nivel').enable();
-        this.form.get('programa').disable();
+        // this.form.get('programa').disable();
       } else {
         this.form.patchValue({
           nivel: null,
@@ -300,6 +320,10 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   // }
 
 
+  validarVaciado(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {
+    // Return a boolean if the consulta.resultado has all the values of cantidad equal to 0
+    return !consulta.resultado.every((x) => x.cantidad === 0);
+  }
 
   clickRubro(rubro: HTMLElement, rubroObj: string) {
     if (rubro != null) {
@@ -320,18 +344,38 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   }
 
   generarGrafica(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {
-    let arreglos = ["#CCF5AC", "#7E2E84", "#EF798A", "#7E2E84", "#D14081", "#4DA167", "#A9E4EF", "#DDC9B4", "#44355B", "#EE5622"];
+
+    // If some object inside the array resultado has the value 'Si' in the attribute serie, the cantidad atribute isn't important
+    let arreglos = ["#9CD6AB", "#9EB9D9", "#D4DAB6", "#7E2E84", "#D9A39E", "#8C7A79", "#D69CCF", "#B1D6D3", "#9CD6AB", "#75658A"];
+
+    if (consulta.resultado.some(x => x.serie == 'Sí')) {
+      arreglos = ['#97D678', '#D67A6B', '#81BDD6'];
+      // Sort consulta.resultados if the serie has 'sí', the second place will be 'no', and the third place will be the rest
+      consulta.resultado = consulta.resultado.sort((a, b) => {
+        if (a.serie == 'Sí') {
+          return -1;
+        } else if (a.serie == 'No') {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    }
+
     return {
       labels: consulta.resultado.map(x => x.serie),
       datasets: [{
         label: "Prueba",
         data: consulta.resultado.map(x => x.cantidad),
-        backgroundColor: this.shuffle(arreglos)
+        backgroundColor: this.shuffle(arreglos, !consulta.resultado.some(x => x.serie == 'Sí'))
       }]
     };
   }
 
-  shuffle(array) {
+  shuffle(array: any[], shuffleReal = true) {
+    if (!shuffleReal) {
+      return array;
+    }
     let currentIndex = array.length, randomIndex;
 
     // While there remain elements to shuffle...
