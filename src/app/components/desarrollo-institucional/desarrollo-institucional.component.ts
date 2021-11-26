@@ -59,6 +59,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     // }
   };
 
+  fechaCorte: { fecha: string, periodo: string };
+
   constructor(
     private store: Store<AppState>,
     private fb: FormBuilder,

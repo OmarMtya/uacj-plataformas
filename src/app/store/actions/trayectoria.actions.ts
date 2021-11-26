@@ -27,3 +27,18 @@ export const seleccionarRubro = createAction(
   '[Trayectoria] Seleccionar Rubro',
   props<{ rubro: Rubro<Trayectoria | Desarrollo> }>()
 );
+
+export const getCorteInformacion = createAction(
+  '[Trayectoria] Get Corte Informacion',
+  props<{ rubro: Rubro<Trayectoria | Desarrollo>, periodo: string }>()
+);
+
+export const getCorteInformacionSuccess = createAction(
+  '[Trayectoria] Get Corte Informacion Success',
+  props<{ data: { fuente: string; fecha_corte: string } }>()
+);
+
+export const getCorteInformacionFailure = createAction(
+  '[Trayectoria] Get Corte Informacion Failure',
+  props<{ error: any }>()
+);

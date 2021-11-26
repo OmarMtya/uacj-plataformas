@@ -112,8 +112,8 @@ export class TrayectoriaEscolarService {
     }));
   }
 
-  getFechaCorte(rubro: Rubro<Trayectoria>, periodo: Periodo) {
-    return this.http.get(`${this.getRuta(`/fecha_corte`)}${periodo.desc}/${rubro}`);
+  getFechaCorte(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string) {
+    return this.http.get(`${this.getRuta(`/fecha_corte`)}/${periodo}/${rubro}`);
   }
 
   private getRuta(ruta?: string) {

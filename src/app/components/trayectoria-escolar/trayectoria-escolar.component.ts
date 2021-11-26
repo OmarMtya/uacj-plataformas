@@ -13,7 +13,7 @@ import { Nivel } from 'src/app/models/nivel.model';
 import { Periodo } from 'src/app/models/periodo.model';
 import { Programa } from 'src/app/models/programas.model';
 import { getCampus, getNiveles, getPeriodos, getPeriodosSuccess, getProgramas } from 'src/app/store/actions/form.actions';
-import { getConsulta, seleccionarRubro } from 'src/app/store/actions/trayectoria.actions';
+import { getConsulta, getCorteInformacion, seleccionarRubro } from 'src/app/store/actions/trayectoria.actions';
 import { AppState } from 'src/app/store/app.store';
 import { getRubroTE } from 'src/app/store/selectors/router.selectors';
 import { getRubro } from 'src/app/store/selectors/trayectoria.selectors';
@@ -45,7 +45,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
-
+  fechaCorte: { fuente: string; fecha_corte: string };
 
   constructor(
     private store: Store<AppState>,
@@ -61,8 +61,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   ngOnInit() {
-    // this.store.dispatch(seleccionarRubro({ rubro: this.rubroSeleccionado }));
-    // this.detectarRubro();
+    this.store.select(trayectoriaSelectors.getfechaCorte).pipe(takeUntil(this.unsuscribe$)).subscribe((fechaCorte: { fuente: string; fecha_corte: string }) => this.fechaCorte = fechaCorte);
   }
 
   ngOnDestroy(): void {
@@ -111,6 +110,10 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
      */
     this.store.pipe(select(trayectoriaSelectors.getConsulta)).pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((consulta: Consulta) => {
       this.consulta = consulta;
+      this.store.dispatch(getCorteInformacion({
+        rubro: this.rubroSeleccionado,
+        periodo: this.form.get('periodo').value,
+      }));
     });
 
     /**

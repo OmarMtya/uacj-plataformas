@@ -14,13 +14,15 @@ export interface TrayectoriaState {
   error: any;
   consulta: Consulta;
   rubroSeleccionado: Rubro<Trayectoria | Desarrollo>;
+  fechaCorte: { fuente: string; fecha_corte: string };
 };
 
 const initialState: TrayectoriaState = {
   cargando: false,
   error: null,
   consulta: null,
-  rubroSeleccionado: 'matricula'
+  rubroSeleccionado: 'matricula',
+  fechaCorte: null
 };
 
 export const trayectoriareducer = createReducer(
@@ -43,5 +45,20 @@ export const trayectoriareducer = createReducer(
   on(trayectoria.seleccionarRubro, (state, { rubro }) => ({
     ...state,
     rubroSeleccionado: rubro
+  })),
+  on(trayectoria.getCorteInformacion, (state, { rubro, periodo }) => ({
+    ...state,
+    cargando: true,
+    error: null,
+  })),
+  on(trayectoria.getCorteInformacionSuccess, (state, { data }) => ({
+    ...state,
+    cargando: false,
+    fechaCorte: data
+  })),
+  on(trayectoria.getCorteInformacionFailure, (state, { error }) => ({
+    ...state,
+    cargando: false,
+    error: { ...error }
   }))
 );

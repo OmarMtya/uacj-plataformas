@@ -25,6 +25,17 @@ export class TrayectoriaEffects {
     );
   });
 
+  getCorteInformacion$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(appActions.getCorteInformacion),
+      switchMap(({ rubro, periodo }) =>
+        this.trayectoria.getFechaCorte(rubro, periodo).pipe(
+          map((data: any) => appActions.getCorteInformacionSuccess({ data: data })),
+          catchError(error => of(appActions.getCorteInformacionFailure({ error }))))
+      ),
+    );
+  });
+
   // seleccionarRubro$ = createEffect(() => {
   //   return this.actions$.pipe(
   //     ofType(appActions.seleccionarRubro),
