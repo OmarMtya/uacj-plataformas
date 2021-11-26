@@ -45,6 +45,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
+  leave$ = new Subject();
   fechaCorte: { fuente: string; fecha_corte: string };
 
   constructor(
@@ -61,11 +62,12 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   }
 
   ngOnInit() {
-    this.store.select(trayectoriaSelectors.getfechaCorte).pipe(takeUntil(this.unsuscribe$)).subscribe((fechaCorte: { fuente: string; fecha_corte: string }) => this.fechaCorte = fechaCorte);
+    this.store.select(trayectoriaSelectors.getfechaCorte).pipe(takeUntil(this.leave$)).subscribe((fechaCorte: { fuente: string; fecha_corte: string }) => this.fechaCorte = fechaCorte);
   }
 
   ngOnDestroy(): void {
     this.unsuscribe$.next();
+    this.leave$.next();
   }
 
   detectarRubro() {
