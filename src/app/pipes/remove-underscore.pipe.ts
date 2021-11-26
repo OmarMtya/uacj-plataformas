@@ -7,7 +7,7 @@ export class RemoveUnderscorePipe implements PipeTransform {
 
   transform(value: string): string {
     value = value.replace(/_/g, ' ');
-    value = value.replace(/([0-9])/g, ' $1');
+    value = value.replace(/([0-9])/g, ' $1 años');
     return value;
   }
 
