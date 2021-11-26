@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  server: (plataforma: string) => `http://indicadores.uacj.mx/${plataforma}/public`
+  server: (plataforma: string) => `https://indicadores.uacj.mx/${plataforma}/public`
 };
 
 /*
