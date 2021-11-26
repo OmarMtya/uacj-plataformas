@@ -39,28 +39,28 @@ export class DesarrolloInstitucionalService {
           "desc": "IIT"
         }
       ]));
-    } else if (rubro == 'avance_padron_egreso') {
+    } else if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
     }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus`);
   }
 
   getPeriodos(rubro: Rubro<Desarrollo | Trayectoria>) {
-    if (rubro == 'avance_padron_egreso') {
+    if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_periodos`);
     }
     return (<Observable<{ desc: string }[]>>of([{ "desc": "2020" }]));
   }
 
   getDepartamentos(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, periodo: string) {
-    if (rubro == 'avance_padron_egreso') {
+    if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_departamento/${periodo}/${campus}`);
     }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}`);
   }
 
   getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, departamento: string) {
-    if (rubro == 'avance_padron_egreso') {
+    if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_programa/${periodo}/${campus}/${departamento}/${nivel}`);
     }
     return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}/${departamento}`);
@@ -183,7 +183,7 @@ export class DesarrolloInstitucionalService {
         break;
     }
 
-    if (rubro == 'avance_padron_egreso') {
+    if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return forkJoin([this.http.get<any[]>(`${this.getRuta(`/${rubro}`)}/consulta_avance/${periodo}/${campus}/${departamento}/${nivel}/${programa}`).pipe(map((x) => {
         if (programa != 'Todos') {
           return [{

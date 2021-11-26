@@ -61,6 +61,11 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
   fechaCorte: { fecha: string, periodo: string };
 
+  contestados_avances = {
+    contestadas: [],
+    sin_contestar: []
+  }
+
   constructor(
     private store: Store<AppState>,
     private fb: FormBuilder,
@@ -128,12 +133,28 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     this.unsuscribe$.next();
   }
 
+  reiniciarAvances() {
+    this.contestados_avances = {
+      contestadas: [],
+      sin_contestar: []
+    };
+  }
+
+  llenarAvances(contestadas: any[], sin_contestar: any[]) {
+    console.log(contestadas);
+
+    this.contestados_avances = {
+      contestadas,
+      sin_contestar
+    };
+  }
+
   llenarFormulariosDatosDinamicos() {
     setTimeout(() => {
-      if (this.rubroSeleccionado == 'avance_padron_egreso') {
+      if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
         this.form.get('nivel').enable();
       } else {
-        this.form.get('nivel').disable();
+        // this.form.get('nivel').disable();
       }
       this.store.pipe(select(formSelectors.getPeriodos)).pipe(filter((x) => x.length != 0), take(1)).subscribe((periodos: Periodo[]) => { // Toda la suscripción se basa en los periodos, en este caso siempre son 2020
         this.form.patchValue({ // Pongo el periodo por default, y los demás en Todos, no emito el evento para evitar las suscripciones
@@ -164,7 +185,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
               plataforma: 'desarrollo'
             }))
           );
-          if (this.rubroSeleccionado == 'avance_padron_egreso') {
+          if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
             objeto = of(
               this.store.dispatch(getDepartamentos({ rubro: this.rubroSeleccionado, campus: campus[0].desc, plataforma: 'desarrollo', periodo: periodos[0].desc })), // Traigo los departamentos
               this.store.dispatch(getProgramas({
@@ -196,8 +217,11 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
               this.form.get('nivel').value,
               this.form.get('periodo').value,
             ).pipe(take(1)).subscribe((x) => {
-              if (this.rubroSeleccionado == 'avance_padron_egreso') {
+              if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
                 this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
+                if (x[0].original.length > 3) {
+                  this.llenarAvances(x[4], x[5]);
+                }
               } else {
                 this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
               }
@@ -228,8 +252,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
       this.form.get('departamento').disable();
       // this.form.get('programa').disable();
-      if (this.rubroSeleccionado == 'avance_padron_egreso') {
-        this.form.get('nivel').disable();
+      if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
+        // this.form.get('nivel').disable();
       }
     });
 
@@ -244,13 +268,13 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.form.get('departamento').enable();
       // this.form.get('programa').disable();
       if (this.rubroSeleccionado != 'avance_padron_egreso') {
-        this.form.get('nivel').disable();
+        // this.form.get('nivel').disable();
       }
     });
 
     this.getSubscripcionForm('departamento').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((departamento: string) => {
 
-      if (this.rubroSeleccionado == 'avance_padron_egreso') {
+      if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
         this.store.dispatch(getNiveles({
           rubro: this.rubroSeleccionado,
           campus: this.form.get('campus').value,
@@ -265,7 +289,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.form.patchValue({
         programa: null,
       });
-      if (this.rubroSeleccionado != 'avance_padron_egreso') {
+      if (this.rubroSeleccionado != 'avance_padron_egreso' && this.rubroSeleccionado != 'avance_seguimiento_2' && this.rubroSeleccionado != 'avance_seguimiento_5') {
         this.form.get('nivel').enable();
         // this.form.get('programa').disable();
       } else {
@@ -277,7 +301,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     });
 
     this.getSubscripcionForm('nivel').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((nivel: string) => {
-      if (this.rubroSeleccionado != 'avance_padron_egreso') {
+      if (this.rubroSeleccionado != 'avance_padron_egreso' && this.rubroSeleccionado != 'avance_seguimiento_2' && this.rubroSeleccionado != 'avance_seguimiento_5') {
         return;
       }
       this.store.dispatch(getProgramas({ rubro: this.rubroSeleccionado, periodo: this.form.get('periodo').value, campus: this.form.get('campus').value, departamento: this.form.get('departamento').value, plataforma: 'desarrollo', nivel: nivel }));
@@ -298,8 +322,13 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
         this.form.get('nivel').value,
         this.form.get('periodo').value,
       ).pipe(take(1)).subscribe((x) => {
-        if (this.rubroSeleccionado == 'avance_padron_egreso') {
+        if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
           this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
+          console.log(x, "ESTOY AQUI");
+
+          if (x[0].original.length > 3) {
+            this.llenarAvances(x[4], x[5]);
+          }
         } else {
           this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
         }
@@ -349,6 +378,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
     // If some object inside the array resultado has the value 'Si' in the attribute serie, the cantidad atribute isn't important
     let arreglos = ["#9CD6AB", "#9EB9D9", "#D4DAB6", "#7E2E84", "#D9A39E", "#8C7A79", "#D69CCF", "#B1D6D3", "#9CD6AB", "#75658A"];
+    console.log(consulta.resultado);
 
     if (consulta.resultado.some(x => x.serie == 'Sí')) {
       arreglos = ['#97D678', '#D67A6B', '#81BDD6'];
