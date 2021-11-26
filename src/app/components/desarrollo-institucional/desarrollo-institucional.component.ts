@@ -73,7 +73,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       departamento: new FormControl(null, []),
       programa: new FormControl(null, []),
       nivel: new FormControl(null, []),
-      tipoGraficas: new FormControl('bar', []),
+      tipoGraficas: new FormControl('pie', []),
     });
   }
 
