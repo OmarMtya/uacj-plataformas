@@ -16,19 +16,19 @@ const routes: Routes = [
         loadChildren: () => import('../desarrollo-institucional/desarrollo-institucional-routing.module').then(m => m.DesarrolloInstitucionalRoutingModule)
       },
       {
-        path: 'tab3',
-        loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
+        path: 'iaa',
+        loadChildren: () => import('../informe-anual/informe-anual.module').then(m => m.InformeAnualModule)
       },
       {
         path: '',
-        redirectTo: '/indicadores/te',
+        redirectTo: '/plataformas/indicadores/te',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/indicadores/te',
+    redirectTo: '/plataformas/indicadores/te',
     pathMatch: 'full'
   }
 ];

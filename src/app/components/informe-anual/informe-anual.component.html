@@ -1,0 +1,38 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <div class="w-full flex container m-auto justify-between">
+        <div>
+          <img src="assets/logo.png" class="h-10">
+        </div>
+        <div class="font-bold">
+          Informe anual
+        </div>
+        <div>
+          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6"></ion-icon>
+        </div>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 1</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div class="container mx-auto p-2 pb-16">
+
+    <div #containerRubros
+      class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
+      <div *ngFor="let rubro of rubrosDisponibles; index as index"
+        class="px-5 text-gray-300 font-thin pb-2 {{rubro}} cursor-pointer" [routerLink]="rubro.ruta"
+        routerLinkActive="activo" (click)="clickRubro(elemento)" #elemento>
+        {{rubro.nombre | removeUnderscore | titlecase }}
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+
+  </div>
+</ion-content>

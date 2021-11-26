@@ -1,0 +1,7 @@
+p{
+  @apply p-4;
+}
+
+a{
+  @apply text-blue-500;
+}
