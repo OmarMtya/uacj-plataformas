@@ -19,6 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
 import { ChartModule } from 'angular2-chartjs';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,7 +40,13 @@ import { ChartModule } from 'angular2-chartjs';
     SharedModule,
     ReactiveFormsModule,
     ChartModule,
-    DesarrolloInstitucionalModule // Marca un error si no lo importas en el módulo principal
+    DesarrolloInstitucionalModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }) // Marca un error si no lo importas en el módulo principal
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

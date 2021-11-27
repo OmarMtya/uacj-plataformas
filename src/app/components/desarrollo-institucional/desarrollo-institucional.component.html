@@ -24,58 +24,203 @@
   </ion-header>
   <div class="container mx-auto p-2 pb-16">
 
-    <div #containerRubros class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
+    <div #containerRubros
+      class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
       <div *ngFor="let rubro of rubrosDisponibles; index as index" class="px-5 text-gray-300 font-thins pb-2 {{rubro}}"
         [ngClass]="{'activo': index == 0}" (click)="clickRubro(rubroElement, rubro)" #rubroElement>
         {{rubro | removeUnderscore | titlecase }}
       </div>
     </div>
 
-    <div *ngIf="consulta"
-      class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
-      <ng-container *ngFor="let consulta of consulta">
-        <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
+    <ng-container *ngIf="consulta">
 
-          <div class="col-span-full">
-            <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
-              Comentarios
-            </div>
-            <div *ngFor="let comentario of consulta.resultado"
-              class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
-              <div class="imagen flex-grow-0">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                  style="height: 30px; width: 30px" class="rounded-full">
-              </div>
-              <div class="contenido flex-grow ml-3">
-                <div class="font-bold">
-                  {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
-                </div>
-                <div class="mt-2">
-                  {{comentario.Comentario}}
-                </div>
-              </div>
-            </div>
-          </div>
 
+      <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+        <ng-container *ngFor="let consulta of consulta">
+          <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
+
+            <div class="col-span-full">
+              <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
+                Comentarios
+              </div>
+              <div *ngFor="let comentario of consulta.resultado"
+                class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
+                <div class="imagen flex-grow-0">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                    style="height: 30px; width: 30px" class="rounded-full">
+                </div>
+                <div class="contenido flex-grow ml-3">
+                  <div class="font-bold">
+                    {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
+                  </div>
+                  <div class="mt-2">
+                    {{comentario.Comentario}}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </ng-container>
+          <ng-template #elseComentarios>
+            <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border">
+              <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
+                {{consulta.consulta | removeUnderscore | titlecase}}
+              </div>
+              <ng-container *ngIf="validarVaciado(consulta); else elseSinData">
+                <chart [type]="type" [data]="consulta.data" [options]="options"></chart>
+              </ng-container>
+              <ng-template #elseSinData>
+                <div class="text-center mt-5">
+                  Sin información
+                </div>
+              </ng-template>
+
+            </div>
+          </ng-template>
         </ng-container>
-        <ng-template #elseComentarios>
-          <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border">
-            <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
-              {{consulta.consulta | removeUnderscore | titlecase}}
-            </div>
-            <ng-container *ngIf="validarVaciado(consulta); else elseSinData">
-              <chart [type]="type" [data]="consulta.data" [options]="options"></chart>
-            </ng-container>
-            <ng-template #elseSinData>
-              <div class="text-center mt-5">
-                Sin información
-              </div>
-            </ng-template>
 
+
+      </div>
+
+      <ng-container
+        *ngIf="(contestados_avances.contestadas?.length != 0 && contestados_avances.contestadas != null) || (contestados_avances.sin_contestar?.length != 0 && contestados_avances.sin_contestar?.length != null)">
+
+        <h4 class="text-center text-gray-900 font-bold text-xl my-4">
+          Contestados
+        </h4>
+        <ng-container
+          *ngIf="(contestados_avances.contestadas?.length != 0 && contestados_avances.contestadas != null) ; else elseSinContestados">
+          <table class="w-full">
+            <thead>
+              <tr
+                class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                <th class="px-4 py-3">
+                  Campus
+                </th>
+                <th class="px-4 py-3">
+                  Departamento
+                </th>
+                <th class="px-4 py-3">
+                  Nivel
+                </th>
+                <th class="px-4 py-3">
+                  Programa
+                </th>
+                <th class="px-4 py-3">
+                  Matrícula
+                </th>
+                <th class="px-4 py-3">
+                  Correo
+                </th>
+              </tr>
+            </thead>
+            <tr *ngFor="let alumno of contestados_avances.contestadas">
+              <td class="px-4 py-3 border">
+                {{alumno.campus}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.departamento}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.nivel}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.desc_programa}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.matricula}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.correo}}
+              </td>
+            </tr>
+          </table>
+        </ng-container>
+        <ng-template #elseSinContestados>
+          <div class="text-center mt-5">
+            Nadie ha contestado
           </div>
         </ng-template>
+
+        <h4 class="text-center text-gray-900 font-bold text-xl my-4">
+          Sin contestar
+        </h4>
+        <ng-container
+          *ngIf="(contestados_avances.sin_contestar?.length != 0 && contestados_avances.sin_contestar?.length != null); else elseSinSinContestar">
+
+          <table class="w-full">
+            <thead>
+              <tr
+                class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                <th class="px-4 py-3">
+                  Campus
+                </th>
+                <th class="px-4 py-3">
+                  Departamento
+                </th>
+                <th class="px-4 py-3">
+                  Nivel
+                </th>
+                <th class="px-4 py-3">
+                  Programa
+                </th>
+                <th class="px-4 py-3">
+                  Matrícula
+                </th>
+                <th class="px-4 py-3">
+                  Correo
+                </th>
+              </tr>
+            </thead>
+            <tr *ngFor="let alumno of contestados_avances.sin_contestar">
+              <td class="px-4 py-3 border">
+                {{alumno.campus}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.departamento}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.nivel}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.desc_programa}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.matricula}}
+              </td>
+              <td class="px-4 py-3 border">
+                {{alumno.correo}}
+              </td>
+            </tr>
+          </table>
+        </ng-container>
+        <ng-template #elseSinSinContestar>
+          <div class="text-center mt-5">
+            Todos han contestado
+          </div>
+        </ng-template>
+
+
+
       </ng-container>
-    </div>
+      <!-- <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border">
+              <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
+                Contestadas
+              </div>
+              <div *ngFor="let alumno of contestados_avances.contestadas">
+                {{alumno.matricula}}
+              </div>
+            </div>
+            <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border">
+              <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
+                Sin contestar
+              </div>
+              <div *ngFor="let alumno of contestados_avances.sin_contestar">
+                {{alumno.matricula}}
+              </div>
+            </div> -->
+
+    </ng-container>
 
   </div>
 

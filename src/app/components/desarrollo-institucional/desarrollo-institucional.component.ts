@@ -63,7 +63,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
   contestados_avances = {
     contestadas: [],
-    sin_contestar: []
+    sin_contestar: [],
   }
 
   constructor(
@@ -80,6 +80,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       nivel: new FormControl(null, []),
       tipoGraficas: new FormControl('pie', []),
     });
+    setInterval(() => {
+      console.log(this.contestados_avances);
+    }, 1000);
   }
 
   ngOnInit() {
@@ -136,16 +139,14 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   reiniciarAvances() {
     this.contestados_avances = {
       contestadas: [],
-      sin_contestar: []
+      sin_contestar: [],
     };
   }
 
   llenarAvances(contestadas: any[], sin_contestar: any[]) {
-    console.log(contestadas);
-
     this.contestados_avances = {
       contestadas,
-      sin_contestar
+      sin_contestar,
     };
   }
 
@@ -219,8 +220,10 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
             ).pipe(take(1)).subscribe((x) => {
               if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
                 this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
-                if (x[0].original.length > 3) {
-                  this.llenarAvances(x[4], x[5]);
+                if (x[0][0].original?.length > 3) {
+                  this.llenarAvances(x[0][0].original[4], x[0][0].original[5]);
+                } else {
+                  this.reiniciarAvances();
                 }
               } else {
                 this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
@@ -324,10 +327,12 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       ).pipe(take(1)).subscribe((x) => {
         if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
           this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
-          console.log(x, "ESTOY AQUI");
+          console.log(x[0][0].original, x[0][0].original.length);
 
-          if (x[0].original.length > 3) {
-            this.llenarAvances(x[4], x[5]);
+          if (x[0][0].original?.length > 3) {
+            this.llenarAvances(x[0][0].original[4], x[0][0].original[5]);
+          } else {
+            this.reiniciarAvances();
           }
         } else {
           this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
@@ -378,7 +383,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
     // If some object inside the array resultado has the value 'Si' in the attribute serie, the cantidad atribute isn't important
     let arreglos = ["#9CD6AB", "#9EB9D9", "#D4DAB6", "#7E2E84", "#D9A39E", "#8C7A79", "#D69CCF", "#B1D6D3", "#9CD6AB", "#75658A"];
-    console.log(consulta.resultado);
 
     if (consulta.resultado.some(x => x.serie == 'Sí')) {
       arreglos = ['#97D678', '#D67A6B', '#81BDD6'];
