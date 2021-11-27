@@ -1,15 +1,17 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
-      <div class="w-full flex container m-auto justify-between">
-        <div>
-          <img src="assets/logo.png" class="h-10">
+      <div class="w-full container grid grid-cols-3 text-center m-auto">
+        <div class="h-10 w-20">
+          <img src="assets/logo.png" class="w-full h-full">
         </div>
         <div class="font-bold">
-          Desarrollo institucional
+          <span class="hidden md:block lg:block xl:block 2xl:block">
+            Desarrollo institucional
+          </span>
         </div>
-        <div>
-          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6"></ion-icon>
+        <div class="">
+          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6 block m-auto mr-0"></ion-icon>
         </div>
       </div>
     </ion-title>
@@ -27,8 +29,8 @@
     <div #containerRubros
       class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
       <div *ngFor="let rubro of rubrosDisponibles; index as index" class="px-5 text-gray-300 font-thins pb-2 {{rubro}}"
-        [ngClass]="{'activo': index == 0}" (click)="clickRubro(rubroElement, rubro)" #rubroElement>
-        {{rubro | removeUnderscore | titlecase }}
+        [ngClass]="{'activo': index == 0}" (click)="clickRubro(rubroElement, rubro.rubro)" #rubroElement>
+        {{rubro.display | removeUnderscore | titlecase }}
       </div>
     </div>
 
@@ -90,55 +92,57 @@
         </h4>
         <ng-container
           *ngIf="(contestados_avances.contestadas?.length != 0 && contestados_avances.contestadas != null) ; else elseSinContestados">
-          <table class="w-full">
-            <thead>
-              <tr
-                class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="px-4 py-3">
-                  Campus
-                </th>
-                <th class="px-4 py-3">
-                  Departamento
-                </th>
-                <th class="px-4 py-3">
-                  Nivel
-                </th>
-                <th class="px-4 py-3">
-                  Programa
-                </th>
-                <th class="px-4 py-3">
-                  Matrícula
-                </th>
-                <th class="px-4 py-3">
-                  Correo
-                </th>
+          <div class="w-full overflow-auto text-xs">
+            <table class="w-full overflow-x-auto">
+              <thead>
+                <tr
+                  class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                  <th class="px-4 py-3">
+                    Campus
+                  </th>
+                  <th class="px-4 py-3">
+                    Departamento
+                  </th>
+                  <th class="px-4 py-3">
+                    Nivel
+                  </th>
+                  <th class="px-4 py-3">
+                    Programa
+                  </th>
+                  <th class="px-4 py-3">
+                    Matrícula
+                  </th>
+                  <th class="px-4 py-3">
+                    Correo
+                  </th>
+                </tr>
+              </thead>
+              <tr *ngFor="let alumno of contestados_avances.contestadas">
+                <td class="px-4 py-3 border">
+                  {{alumno.campus}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.departamento}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.nivel}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.desc_programa}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.matricula}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.correo}}
+                </td>
               </tr>
-            </thead>
-            <tr *ngFor="let alumno of contestados_avances.contestadas">
-              <td class="px-4 py-3 border">
-                {{alumno.campus}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.departamento}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.nivel}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.desc_programa}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.matricula}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.correo}}
-              </td>
-            </tr>
-          </table>
+            </table>
+          </div>
         </ng-container>
         <ng-template #elseSinContestados>
           <div class="text-center mt-5">
-            Nadie ha contestado
+            Ningún alumno ha contestado.
           </div>
         </ng-template>
 
@@ -147,56 +151,57 @@
         </h4>
         <ng-container
           *ngIf="(contestados_avances.sin_contestar?.length != 0 && contestados_avances.sin_contestar?.length != null); else elseSinSinContestar">
-
-          <table class="w-full">
-            <thead>
-              <tr
-                class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                <th class="px-4 py-3">
-                  Campus
-                </th>
-                <th class="px-4 py-3">
-                  Departamento
-                </th>
-                <th class="px-4 py-3">
-                  Nivel
-                </th>
-                <th class="px-4 py-3">
-                  Programa
-                </th>
-                <th class="px-4 py-3">
-                  Matrícula
-                </th>
-                <th class="px-4 py-3">
-                  Correo
-                </th>
+          <div class="w-full overflow-auto text-xs">
+            <table class="w-full">
+              <thead>
+                <tr
+                  class="font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+                  <th class="px-4 py-3">
+                    Campus
+                  </th>
+                  <th class="px-4 py-3">
+                    Departamento
+                  </th>
+                  <th class="px-4 py-3">
+                    Nivel
+                  </th>
+                  <th class="px-4 py-3">
+                    Programa
+                  </th>
+                  <th class="px-4 py-3">
+                    Matrícula
+                  </th>
+                  <th class="px-4 py-3">
+                    Correo
+                  </th>
+                </tr>
+              </thead>
+              <tr *ngFor="let alumno of contestados_avances.sin_contestar">
+                <td class="px-4 py-3 border">
+                  {{alumno.campus}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.departamento}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.nivel}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.desc_programa}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.matricula}}
+                </td>
+                <td class="px-4 py-3 border">
+                  {{alumno.correo}}
+                </td>
               </tr>
-            </thead>
-            <tr *ngFor="let alumno of contestados_avances.sin_contestar">
-              <td class="px-4 py-3 border">
-                {{alumno.campus}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.departamento}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.nivel}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.desc_programa}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.matricula}}
-              </td>
-              <td class="px-4 py-3 border">
-                {{alumno.correo}}
-              </td>
-            </tr>
-          </table>
+            </table>
+          </div>
         </ng-container>
         <ng-template #elseSinSinContestar>
           <div class="text-center mt-5">
-            Todos han contestado
+            Todos los alumnos han contestado.
           </div>
         </ng-template>
 
@@ -265,7 +270,7 @@
         </form>
       </div>
       <div (click)="showFilters = !showFilters"
-        class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer">
+        class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer z-50">
         <ion-icon [name]="showFilters? 'close' : 'funnel'" class="text-xl"></ion-icon>
       </div>
     </div>

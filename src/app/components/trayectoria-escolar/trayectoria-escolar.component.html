@@ -1,15 +1,17 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-title>
-      <div class="w-full flex container m-auto justify-between">
-        <div>
-          <img src="assets/logo.png" class="h-10">
+      <div class="w-full container grid grid-cols-3 text-center m-auto">
+        <div class="h-10 w-20">
+          <img src="assets/logo.png" class="w-full h-full">
         </div>
         <div class="font-bold">
-          Trayectoria escolar
+          <span class="hidden md:block lg:block xl:block 2xl:block">
+            Trayectoria Escolar
+          </span>
         </div>
-        <div>
-          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6"></ion-icon>
+        <div class="">
+          <ion-icon name="log-out" style="color: #C1C0C0" class="h-10 w-6 block m-auto mr-0"></ion-icon>
         </div>
       </div>
     </ion-title>
@@ -28,8 +30,8 @@
       class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
       <div *ngFor="let rubro of rubrosDisponibles; index as index"
         class="px-5 text-gray-300 font-thin pb-2 {{rubro}} cursor-pointer" [ngClass]="{'activo': index == 0}"
-        (click)="localizarRubro(rubroElement, rubro)" #rubroElement>
-        {{rubro | removeUnderscore | titlecase }}
+        (click)="localizarRubro(rubroElement, rubro.rubro)" #rubroElement>
+        {{rubro.display | removeUnderscore | titlecase }}
       </div>
     </div>
 
@@ -120,7 +122,7 @@
         </form>
       </div>
       <div (click)="showFilters = !showFilters"
-        class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer">
+        class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer z-50">
         <ion-icon [name]="showFilters? 'close' : 'funnel'" class="text-xl"></ion-icon>
       </div>
     </div>

@@ -36,7 +36,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   niveles: Nivel[] = [];
   programas: Programa[] = [];
   consulta: Consulta;
-  rubrosDisponibles: string[] = Trayectorias;
+  rubrosDisponibles: { display: string; rubro: string }[] = Trayectorias;
 
   rubroSeleccionado: Rubro<Trayectoria> = 'matricula'; // Entra por default a matrícula
 

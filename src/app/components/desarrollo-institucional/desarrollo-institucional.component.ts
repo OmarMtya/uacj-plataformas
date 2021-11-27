@@ -39,7 +39,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   departamentos: Departamento[] = [];
   niveles: Nivel[] = [];
   consulta: any[]; // Como son demasiadas consultas y no tiene un solo formato, es necesario ponerlo como un arreglo de Any
-  rubrosDisponibles: string[] = Desarrollos;
+  rubrosDisponibles: {display: string, rubro: string}[] = Desarrollos;
 
   rubroSeleccionado: Rubro<Desarrollo> = 'padron_licenciatura'; // Entra por default a padron_licenciatura
 
@@ -80,9 +80,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       nivel: new FormControl(null, []),
       tipoGraficas: new FormControl('pie', []),
     });
-    setInterval(() => {
-      console.log(this.contestados_avances);
-    }, 1000);
   }
 
   ngOnInit() {
@@ -106,8 +103,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.type = tipoGraficas;
 
       if (this.type == 'bar' || this.type == 'line' || this.type == 'radar') {
-        console.log("AHI");
-
         this.options = {
           responsive: true,
           maintainAspectRatio: false,
@@ -327,8 +322,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       ).pipe(take(1)).subscribe((x) => {
         if (this.rubroSeleccionado == 'avance_padron_egreso' || this.rubroSeleccionado == 'avance_seguimiento_2' || this.rubroSeleccionado == 'avance_seguimiento_5') {
           this.consulta = x[0].map((y) => ({ ...y, data: this.generarGrafica(y) }));
-          console.log(x[0][0].original, x[0][0].original.length);
-
           if (x[0][0].original?.length > 3) {
             this.llenarAvances(x[0][0].original[4], x[0][0].original[5]);
           } else {
