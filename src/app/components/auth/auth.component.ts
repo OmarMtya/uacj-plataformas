@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-auth',
@@ -7,12 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService: MsalService) { }
 
   ngOnInit(): void {
+    this.authService.loginPopup()
+      .subscribe((result) => {
+        console.log(result);
+      });
   }
 
-  getAno(){
+  getAno() {
     return new Date().getFullYear();
   }
 

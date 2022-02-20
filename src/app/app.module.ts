@@ -20,7 +20,18 @@ import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
 import { ChartModule } from 'angular2-chartjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
+import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
 
+export function MSALInstanceFactory(): IPublicClientApplication {
+  return new PublicClientApplication({
+    auth: {
+      clientId: '3a5ec684-86af-4e1b-be6e-e636b0b3ec6c',
+      redirectUri: 'http://localhost:8100/login',
+    }
+  })
+}
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -40,6 +51,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     SharedModule,
     ReactiveFormsModule,
     ChartModule,
+    MsalModule,
     DesarrolloInstitucionalModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -48,7 +60,17 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       registrationStrategy: 'registerWhenStable:30000'
     }) // Marca un error si no lo importas en el módulo principal
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy
+    },
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory
+    },
+    MsalService
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

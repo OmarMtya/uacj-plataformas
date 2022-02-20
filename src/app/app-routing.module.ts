@@ -32,9 +32,11 @@ const routes: Routes = [
     redirectTo: 'auth'
   }
 ];
+const isIframe = window !== window.parent && !window.opener;
+
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: true })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash: true, initialNavigation: !isIframe ? 'enabled' : 'disabled' })
   ],
   exports: [RouterModule]
 })
