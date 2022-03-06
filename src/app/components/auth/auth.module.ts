@@ -8,7 +8,7 @@ import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [
-    AuthComponent
+    AuthComponent,
   ],
   imports: [
     IonicModule,

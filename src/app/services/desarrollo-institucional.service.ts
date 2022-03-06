@@ -39,35 +39,38 @@ export class DesarrolloInstitucionalService {
           "desc": "IIT"
         }
       ]));
-    } else if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
+    } else {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus/${periodo}`);
     }
-    return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_campus`);
   }
 
   getPeriodos(rubro: Rubro<Desarrollo | Trayectoria>) {
     if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_periodos`);
     }
-    return (<Observable<{ desc: string }[]>>of([{ "desc": "2020" }]));
+    return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_periodo`);
   }
 
   getDepartamentos(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, periodo: string) {
     if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_departamento/${periodo}/${campus}`);
     }
-    return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}`);
+    return this.http.get(`${this.getRuta(`/${rubro}`)}/${periodo}/${campus}`);
   }
 
   getProgramas(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, nivel: string, departamento: string) {
     if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
       return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_programa/${periodo}/${campus}/${departamento}/${nivel}`);
     }
-    return this.http.get(`${this.getRuta(`/${rubro}`)}/${campus}/${departamento}`);
+    return this.http.get(`${this.getRuta(`/${rubro}`)}/${periodo}/${campus}/${departamento}`);
   }
 
   getNiveles(rubro: Rubro<Trayectoria | Desarrollo>, periodo: string, campus: string, departamento: string) {
-    return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_nivel/${periodo}/${campus}/${departamento}`);
+    if (rubro == 'avance_padron_egreso' || rubro == 'avance_seguimiento_2' || rubro == 'avance_seguimiento_5') {
+      return this.http.get(`${this.getRuta(`/${rubro}`)}/consulta_nivel/${periodo}/${campus}/${departamento}`);
+    }
+
+    return this.http.get(`${this.getRuta(`/${rubro}`)}/${periodo}/${campus}/${departamento}`);
   }
 
   getConsultas(rubro: Rubro<Desarrollo | Trayectoria>, campus: string, departamento: string, programa: string, nivel: string, periodo: string): Observable<any[]> {
@@ -210,7 +213,7 @@ export class DesarrolloInstitucionalService {
       }))]);
     }
 
-    return forkJoin((consultasSeleccionadas).map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${campus}/${departamento}/${programa}`).pipe(map((x: any[]) => {
+    return forkJoin((consultasSeleccionadas).map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${periodo}/${campus}/${departamento}/${programa}`).pipe(map((x: any[]) => {
       switch (consulta) { // Debido a que los datos que devuelve el backend son diferentes, se hace un switch para cada consulta diferente, para que quede genérico
         case 'sexo':
           return ({

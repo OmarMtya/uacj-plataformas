@@ -38,6 +38,7 @@ export const formreducer = createReducer(
     ...state,
     cargando: false,
     error: { ...error },
+    periodos: []
   })),
   on(form.getCampus, (state) => ({
     ...state,
@@ -53,6 +54,7 @@ export const formreducer = createReducer(
     ...state,
     cargando: false,
     error: { ...error },
+    campus: []
   })),
   on(form.getNiveles, (state) => ({
     ...state,
@@ -68,21 +70,7 @@ export const formreducer = createReducer(
     ...state,
     cargando: false,
     error: { ...error },
-  })),
-  on(form.getNiveles, (state) => ({
-    ...state,
-    cargando: true,
-    error: null,
-  })),
-  on(form.getNivelesSuccess, (state, { niveles }) => ({
-    ...state,
-    cargando: false,
-    niveles: [...niveles],
-  })),
-  on(form.getNivelesFailure, (state, { error }) => ({
-    ...state,
-    cargando: false,
-    error: { ...error },
+    niveles: []
   })),
   on(form.getProgramas, (state) => ({
     ...state,
@@ -97,6 +85,7 @@ export const formreducer = createReducer(
   on(form.getProgramasFailure, (state, { error }) => ({
     ...state,
     cargando: false,
+    programas: [],
     error: { ...error },
   })),
   on(form.getDepartamentos, (state) => ({
@@ -111,6 +100,7 @@ export const formreducer = createReducer(
   })),
   on(form.getDepartamentosFailure, (state, { error }) => ({
     ...state,
-    error: { ...error }
+    error: { ...error },
+    departamentos: []
   }))
 );

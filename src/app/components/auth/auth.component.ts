@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
+import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
+import { EventMessage, EventType, InteractionStatus } from '@azure/msal-browser';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-auth',
@@ -7,14 +9,21 @@ import { MsalService } from '@azure/msal-angular';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit {
+  isIframe = false;
+  loginDisplay = false;
 
-  constructor(private authService: MsalService) { }
+  constructor(
+    private authService: MsalService,
+  ) { }
 
   ngOnInit(): void {
-    this.authService.loginPopup()
-      .subscribe((result) => {
-        console.log(result);
-      });
+    if (sessionStorage.getItem('msal.interaction.status')) {
+
+    }
+  }
+
+  login() {
+    this.authService.loginRedirect();
   }
 
   getAno() {

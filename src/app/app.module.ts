@@ -20,8 +20,8 @@ import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
 import { ChartModule } from 'angular2-chartjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
-import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+import { MsalGuard, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE } from '@azure/msal-angular';
+import { Configuration, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
 
 export function MSALInstanceFactory(): IPublicClientApplication {
@@ -29,6 +29,9 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: '3a5ec684-86af-4e1b-be6e-e636b0b3ec6c',
       redirectUri: 'http://localhost:8100/login',
+    },
+    cache: {
+      cacheLocation: 'localStorage'
     }
   })
 }
@@ -69,7 +72,8 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory
     },
-    MsalService
+    MsalService,
+    MsalGuard
   ],
   bootstrap: [AppComponent],
 })
