@@ -24,6 +24,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.isIframe = window !== window.parent && !window.opener;
+    let allAccounts = this.authService.instance.getAllAccounts();
+    console.log(allAccounts);
   }
 
   login() {

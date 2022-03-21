@@ -30,6 +30,14 @@ const routes: Routes = [
     loadChildren: () => import('./components/auth/auth.module').then(m => m.AuthModule),
     canActivate: [NoauthGuard]
   },
+  // {
+  //   path: 'login',
+  //   component: LoginComponent,
+  // },
+  // {
+  //   path: 'code',
+  //   component: LoginComponent,
+  // },
   {
     path: '',
     redirectTo: 'auth',

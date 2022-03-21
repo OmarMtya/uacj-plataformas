@@ -17,9 +17,6 @@ export class AuthComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (sessionStorage.getItem('msal.interaction.status')) {
-
-    }
   }
 
   login() {

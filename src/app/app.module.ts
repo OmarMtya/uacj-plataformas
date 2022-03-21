@@ -20,15 +20,15 @@ import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
 import { ChartModule } from 'angular2-chartjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
-import { MsalGuard, MsalModule, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE } from '@azure/msal-angular';
-import { Configuration, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+import { MsalGuard, MsalModule, MsalRedirectComponent, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE } from '@azure/msal-angular';
+import { Configuration, InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
       clientId: '3a5ec684-86af-4e1b-be6e-e636b0b3ec6c',
-      redirectUri: 'http://localhost:8100/login',
+      redirectUri: environment.redirectMSAL,
     },
     cache: {
       cacheLocation: 'localStorage'
@@ -54,7 +54,17 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     SharedModule,
     ReactiveFormsModule,
     ChartModule,
-    MsalModule,
+    MsalModule.forRoot(MSALInstanceFactory(), {
+      interactionType: InteractionType.Redirect,
+      authRequest: {
+        scopes: ['user.read']
+      }
+    }, {
+      interactionType: InteractionType.Redirect,
+      protectedResourceMap: new Map([
+        ['https://graph.microsoft.com/v1.0/me', ['user.read']]
+      ])
+    }),
     DesarrolloInstitucionalModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -68,13 +78,34 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       provide: RouteReuseStrategy,
       useClass: IonicRouteStrategy
     },
-    {
-      provide: MSAL_INSTANCE,
-      useFactory: MSALInstanceFactory
-    },
+    // {
+    //   provide: MSAL_INSTANCE,
+    //   useFactory: MSALInstanceFactory
+    // },
     MsalService,
     MsalGuard
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent, MsalRedirectComponent],
 })
 export class AppModule { }
+
+
+MsalModule.forRoot(new PublicClientApplication({
+  auth: {
+    clientId: 'Enter_the_Application_Id_Here',
+  },
+  cache: {
+    cacheLocation: 'localStorage',
+    storeAuthStateInCookie: isIE,
+  }
+}), {
+  interactionType: InteractionType.Redirect,
+  authRequest: {
+    scopes: ['user.read']
+  }
+}, {
+  interactionType: InteractionType.Redirect,
+  protectedResourceMap: new Map([
+    ['https://graph.microsoft.com/v1.0/me', ['user.read']]
+  ])
+})

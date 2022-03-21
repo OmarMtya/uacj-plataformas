@@ -297,7 +297,7 @@ export class TrayectoriaEscolarService {
             icono: 'checkmark'
           },
           {
-            titulo: 'Absorcion Total',
+            titulo: 'Absorción Total',
             clase: 'yellow-card',
             icono: 'bar-chart'
           },
