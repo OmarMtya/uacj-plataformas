@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-informe-anual',
@@ -41,7 +42,9 @@ export class InformeAnualComponent implements OnInit {
       ruta: ['/plataformas', 'indicadores', 'iaa', 'consulta']
     },
   ];
-  constructor() { }
+  constructor(
+    private authService: MsalService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -52,6 +55,10 @@ export class InformeAnualComponent implements OnInit {
       this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' }); // Hace scroll al elemento para poder verlo en el centro
       rubro.classList.add('activo'); // Le pone la clase de activo al elemento seleccionado
     }
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
 }

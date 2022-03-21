@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
     if (
       cuentas[0]?.username.endsWith('alumnos.uacj.mx')
       && !cuentas[0]?.username.includes('@uacj.mx')
-      // && cuentas[0].username != 'al154684@alumnos.uacj.mx'
+      && cuentas[0].username != 'al154684@alumnos.uacj.mx'
     ) {
       alert('No tiene permisos para acceder a esta plataforma, pruebe con otra cuenta');
       sessionStorage.clear();

@@ -21,6 +21,7 @@ import * as trayectoriaSelectors from 'src/app/store/selectors/trayectoria.selec
 import { Departamento } from 'src/app/models/departamento.model';
 import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
 import { Nivel } from 'src/app/models/nivel.model';
+import { MsalService } from '@azure/msal-angular';
 @Component({
   selector: 'app-desarrollo-institucional',
   templateUrl: './desarrollo-institucional.component.html',
@@ -70,7 +71,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     private store: Store<AppState>,
     private fb: FormBuilder,
     private actions$: Actions,
-    private desarrolloService: DesarrolloInstitucionalService
+    private desarrolloService: DesarrolloInstitucionalService,
+    private authService: MsalService
   ) {
     this.form = this.fb.group({
       periodo: new FormControl(null, []),
@@ -124,6 +126,10 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
   ionViewDidEnter(): void {
     this.clickRubro(document.querySelector('.padron_licenciatura'), 'padron_licenciatura');
+  }
+
+  logout(){
+    this.authService.logout();
   }
 
   ngOnDestroy(): void {

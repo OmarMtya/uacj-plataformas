@@ -19,6 +19,7 @@ import { getRubroTE } from 'src/app/store/selectors/router.selectors';
 import { getRubro } from 'src/app/store/selectors/trayectoria.selectors';
 import * as formSelectors from 'src/app/store/selectors/form.selectors';
 import * as trayectoriaSelectors from 'src/app/store/selectors/trayectoria.selectors';
+import { MsalService } from '@azure/msal-angular';
 
 @Component({
   selector: 'app-trayectoria-escolar',
@@ -52,6 +53,7 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
     private store: Store<AppState>,
     private fb: FormBuilder,
     private actions$: Actions,
+    private authService: MsalService
   ) {
     this.form = this.fb.group({
       periodo: new FormControl(null, []),
@@ -68,6 +70,10 @@ export class TrayectoriaEscolarComponent implements OnInit, ViewDidLeave, ViewDi
   ngOnDestroy(): void {
     this.unsuscribe$.next();
     this.leave$.next();
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
   detectarRubro() {

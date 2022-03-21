@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
+import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
+import { EventMessage, EventType } from '@azure/msal-browser';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AppState } from './store/app.store';
 import { getTrayectoriaCargando } from './store/selectors/trayectoria.selectors';
 
@@ -17,7 +19,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private store: Store<AppState>,
-    private authService: MsalService
+    private authService: MsalService,
+    private msalBroadcastService: MsalBroadcastService
   ) {
     this.cargando$ = this.store.select(getTrayectoriaCargando);
   }
@@ -25,7 +28,15 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.isIframe = window !== window.parent && !window.opener;
     let allAccounts = this.authService.instance.getAllAccounts();
-    console.log(allAccounts);
+
+    this.msalBroadcastService.msalSubject$
+      .pipe(
+        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
+      )
+      .subscribe((result: EventMessage) => {
+        window.location.reload();
+        console.log(result);
+      });
   }
 
   login() {
