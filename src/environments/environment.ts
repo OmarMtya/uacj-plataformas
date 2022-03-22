@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   server: (plataforma: string) => `https://indicadores.uacj.mx/${plataforma}/public`,
-  redirectMSAL: 'http://localhost:8100/login'
+  redirectMSAL: 'http://localhost:8100'
 };
 
 /*

@@ -15,10 +15,10 @@ const routes: Routes = [
         path: 'edi',
         loadChildren: () => import('../desarrollo-institucional/desarrollo-institucional-routing.module').then(m => m.DesarrolloInstitucionalRoutingModule)
       },
-      {
-        path: 'iaa',
-        loadChildren: () => import('../informe-anual/informe-anual.module').then(m => m.InformeAnualModule)
-      },
+      // {
+      //   path: 'iaa',
+      //   loadChildren: () => import('../informe-anual/informe-anual.module').then(m => m.InformeAnualModule)
+      // },
       {
         path: '',
         redirectTo: '/plataformas/indicadores/te',
