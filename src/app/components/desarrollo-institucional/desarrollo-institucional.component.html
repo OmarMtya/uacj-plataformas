@@ -20,13 +20,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
   <div class="container mx-auto p-2 pb-16">
-
     <div #containerRubros
       class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
       <div *ngFor="let rubro of rubrosDisponibles; index as index" class="px-5 text-gray-300 font-thins pb-2 {{rubro}}"
@@ -46,21 +40,62 @@
               <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
                 Comentarios
               </div>
-              <div *ngFor="let comentario of consulta.resultado"
-                class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
-                <div class="imagen flex-grow-0">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                    style="height: 30px; width: 30px" class="rounded-full">
+
+              <!-- <div class="">
+                <div class="" *ngFor="let resultado of consulta.resultado; index as i" [ngClass]="{'hidden': i != 0}">
+                  <div *ngFor="let comentario of resultado"
+                    class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
+                    <div class="imagen flex-grow-0">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                        style="height: 30px; width: 30px" class="rounded-full">
+                    </div>
+                    <div class="contenido flex-grow ml-3">
+                      <div class="font-bold">
+                        {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
+                      </div>
+                      <div class="mt-2">
+                        {{comentario.Comentario}}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="contenido flex-grow ml-3">
-                  <div class="font-bold">
-                    {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
-                  </div>
-                  <div class="mt-2">
-                    {{comentario.Comentario}}
-                  </div>
+              </div> -->
+              <div
+                class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
+                <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer activo">
+                  Prueba
+                </div>
+                <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer">
+                  Prueba
+                </div>
+                <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer">
+                  Prueba
                 </div>
               </div>
+
+              <div class="antialiased mx-auto max-w-screen-sm" *ngFor="let resultado of consulta.resultado; index as i">
+                <div class="space-y-4">
+
+                  <div class="flex" *ngFor="let comentario of resultado">
+                    <div class="flex-shrink-0 mr-3">
+                      <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                        src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
+                        alt="">
+                    </div>
+                    <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                      <strong>Sarah</strong> <span class="text-xs text-gray-400 ml-2">3:34 PM</span>
+                      <p class="text-sm">
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr,
+                        sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                        magna aliquyam erat, sed diam voluptua.
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+
             </div>
 
           </ng-container>

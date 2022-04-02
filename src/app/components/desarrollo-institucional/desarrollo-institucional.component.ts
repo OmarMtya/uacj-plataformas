@@ -67,6 +67,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     sin_contestar: [],
   }
 
+  comentarioSeleccionado = ''
+
   constructor(
     private store: Store<AppState>,
     private fb: FormBuilder,
@@ -229,6 +231,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
               } else {
                 this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
               }
+              console.log(this.consulta);
             });
           });
 
