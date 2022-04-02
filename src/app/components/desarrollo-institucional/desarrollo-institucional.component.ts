@@ -22,6 +22,8 @@ import { Departamento } from 'src/app/models/departamento.model';
 import { DesarrolloInstitucionalService } from 'src/app/services/desarrollo-institucional.service';
 import { Nivel } from 'src/app/models/nivel.model';
 import { MsalService } from '@azure/msal-angular';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 @Component({
   selector: 'app-desarrollo-institucional',
   templateUrl: './desarrollo-institucional.component.html',
@@ -401,25 +403,18 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   }
 
   getTypeGrafica(x: any) {
-    console.log(x);
-
     return x.labels.length > 5 ? 'bar' : 'pie';
   }
 
   getOptionsGrafica(x: any) {
-    let retorno = {
+    return {
       responsive: true,
       maintainAspectRatio: false,
       legend: {
-        display: false
+        display: x.labels.length <= 5
       },
     };
 
-    if (x.labels.length <= 5) {
-      delete retorno.legend;
-    }
-
-    return retorno;
   }
 
 
@@ -449,7 +444,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   generarGrafica(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {
 
     // If some object inside the array resultado has the value 'Si' in the attribute serie, the cantidad atribute isn't important
-    let arreglos = ["#9CD6AB", "#9EB9D9", "#D4DAB6", "#7E2E84", "#D9A39E", "#8C7A79", "#D69CCF", "#B1D6D3", "#9CD6AB", "#75658A"];
+    let arreglos = ["#9CD6AB", "#9EB9D9", "#D4DAB6", "#ae72b3", "#D9A39E", "#8C7A79", "#D69CCF", "#B1D6D3", "#9CD6AB", "#a795bf"];
 
     if (consulta.resultado.some(x => x.serie == 'Sí')) {
       arreglos = ['#97D678', '#D67A6B', '#81BDD6'];
@@ -468,7 +463,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     return {
       labels: consulta.resultado.map(x => x.serie),
       datasets: [{
-        label: "Prueba",
+        label: "",
         data: consulta.resultado.map(x => x.cantidad),
         backgroundColor: this.shuffle(arreglos, !consulta.resultado.some(x => x.serie == 'Sí'))
       }]

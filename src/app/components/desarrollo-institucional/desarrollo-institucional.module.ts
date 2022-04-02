@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { BrowserModule } from '@angular/platform-browser';
-import { ChartModule } from 'angular2-chartjs';
 
 
 @NgModule({
@@ -22,7 +21,6 @@ import { ChartModule } from 'angular2-chartjs';
     ReactiveFormsModule,
     DesarrolloInstitucionalRoutingModule,
     SharedModule,
-    ChartModule
   ]
 })
 export class DesarrolloInstitucionalModule { }

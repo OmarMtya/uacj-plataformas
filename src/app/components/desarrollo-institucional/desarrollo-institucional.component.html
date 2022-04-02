@@ -104,7 +104,8 @@
                 {{consulta.consulta | removeUnderscore | titlecase | acentos }}
               </div>
               <ng-container *ngIf="validarVaciado(consulta); else elseSinData">
-                <chart [type]="consulta.type" [data]="consulta.data" [options]="consulta.options"></chart>
+                <!-- <chart [type]="consulta.type" [data]="consulta.data" [options]="consulta.options"></chart> -->
+                <app-chart [chartType]="consulta.type" [data]="consulta.data" [options]="consulta.options"></app-chart>
               </ng-container>
               <ng-template #elseSinData>
                 <div class="text-center mt-5">

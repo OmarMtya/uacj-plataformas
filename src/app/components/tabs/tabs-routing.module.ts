@@ -21,14 +21,14 @@ const routes: Routes = [
       // },
       {
         path: '',
-        redirectTo: '/plataformas/indicadores/te',
+        redirectTo: '/plataformas/indicadores/edi',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/plataformas/indicadores/te',
+    redirectTo: '/plataformas/indicadores/edi',
     pathMatch: 'full'
   }
 ];

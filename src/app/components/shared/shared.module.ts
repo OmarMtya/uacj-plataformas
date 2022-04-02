@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LoadingComponent } from './loading/loading.component';
 import { RemoveUnderscorePipe } from 'src/app/pipes/remove-underscore.pipe';
 import { AcentosPipe } from 'src/app/pipes/acentos.pipe';
+import { ChartComponent } from './chart/chart.component';
 
 
 
@@ -11,6 +12,7 @@ import { AcentosPipe } from 'src/app/pipes/acentos.pipe';
     LoadingComponent,
     RemoveUnderscorePipe,
     AcentosPipe,
+    ChartComponent,
   ],
   imports: [
     CommonModule
@@ -18,7 +20,8 @@ import { AcentosPipe } from 'src/app/pipes/acentos.pipe';
   exports: [
     LoadingComponent,
     RemoveUnderscorePipe,
-    AcentosPipe
+    AcentosPipe,
+    ChartComponent,
   ]
 })
 export class SharedModule { }

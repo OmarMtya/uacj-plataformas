@@ -18,7 +18,6 @@ import { SharedModule } from './components/shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DesarrolloInstitucionalModule } from './components/desarrollo-institucional/desarrollo-institucional.module';
-import { ChartModule } from 'angular2-chartjs';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MsalGuard, MsalModule, MsalRedirectComponent, MsalService, MSAL_GUARD_CONFIG, MSAL_INSTANCE } from '@azure/msal-angular';
 import { Configuration, InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
@@ -53,7 +52,6 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     StoreRouterConnectingModule.forRoot(),
     SharedModule,
     ReactiveFormsModule,
-    ChartModule,
     MsalModule.forRoot(MSALInstanceFactory(), {
       interactionType: InteractionType.Redirect,
       authRequest: {
