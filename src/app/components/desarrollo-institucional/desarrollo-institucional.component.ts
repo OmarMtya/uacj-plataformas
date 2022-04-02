@@ -40,7 +40,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   departamentos: Departamento[] = [];
   niveles: Nivel[] = [];
   consulta: any[]; // Como son demasiadas consultas y no tiene un solo formato, es necesario ponerlo como un arreglo de Any
-  rubrosDisponibles: {display: string, rubro: string}[] = Desarrollos;
+  rubrosDisponibles: { display: string, rubro: string }[] = Desarrollos;
 
   rubroSeleccionado: Rubro<Desarrollo> = 'padron_licenciatura'; // Entra por default a padron_licenciatura
 
@@ -67,7 +67,24 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     sin_contestar: [],
   }
 
-  comentarioSeleccionado = ''
+  comentarios = [
+    {
+      titulo: 'Responsabilidad social',
+      seleccionado: true,
+    },
+    {
+      titulo: 'Responsabilidad ambiental',
+      seleccionado: false,
+    },
+    {
+      titulo: 'Calidad del programa',
+      seleccionado: false,
+    },
+    {
+      titulo: 'Comentarios adicionales',
+      seleccionado: false,
+    }
+  ];
 
   constructor(
     private store: Store<AppState>,
@@ -130,7 +147,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     this.clickRubro(document.querySelector('.padron_licenciatura'), 'padron_licenciatura');
   }
 
-  logout(){
+  logout() {
     this.authService.logout();
   }
 
@@ -144,6 +161,20 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       contestadas: [],
       sin_contestar: [],
     };
+  }
+
+  seleccionarComentario(comentarios: { titulo: string, seleccionado: boolean }) {
+    this.comentarios.forEach((comentario) => {
+      if (comentario.titulo == comentarios.titulo) {
+        comentario.seleccionado = true;
+      } else {
+        comentario.seleccionado = false;
+      }
+    });
+  }
+
+  checkComentarioSeleccionado(index: number) {
+    return this.comentarios[index].seleccionado;
   }
 
   llenarAvances(contestadas: any[], sin_contestar: any[]) {
