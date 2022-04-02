@@ -18,7 +18,7 @@ export const Desarrollos = [
   { rubro: 'padron_posgrado', display: 'padrón_posgrado' },
   { rubro: 'seguimiento2', display: 'seguimiento2' },
   { rubro: 'seguimiento5', display: 'seguimiento5' },
-  { rubro: 'avance_padron_egreso', display: 'avance_padrón_egreso' },
-  { rubro: 'avance_seguimiento_2', display: 'avance_seguimiento_2' },
-  { rubro: 'avance_seguimiento_5', display: 'avance_seguimiento_5' }
+  // { rubro: 'avance_padron_egreso', display: 'avance_padrón_egreso' },
+  // { rubro: 'avance_seguimiento_2', display: 'avance_seguimiento_2' },
+  // { rubro: 'avance_seguimiento_5', display: 'avance_seguimiento_5' }
 ];

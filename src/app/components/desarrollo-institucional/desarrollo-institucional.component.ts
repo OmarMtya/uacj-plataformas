@@ -260,7 +260,18 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                   this.reiniciarAvances();
                 }
               } else {
-                this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+                this.consulta = x.map((y) => {
+                  let grafica = this.generarGrafica(y)
+                  let retorno = {
+                    ...y,
+                    data: grafica,
+                    type: this.getTypeGrafica(grafica),
+                    options: this.getOptionsGrafica(grafica),
+                  };
+                  return retorno;
+                }).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
+                console.log(this.consulta[0]);
+
               }
               console.log(this.consulta);
             });
@@ -368,7 +379,16 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
             this.reiniciarAvances();
           }
         } else {
-          this.consulta = x.map((y) => ({ ...y, data: this.generarGrafica(y) })).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
+          this.consulta = x.map((y) => {
+            let grafica = this.generarGrafica(y)
+            let retorno = {
+              ...y,
+              data: grafica,
+              type: this.getTypeGrafica(grafica),
+              options: this.getOptionsGrafica(grafica),
+            };
+            return retorno;
+          }).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
         }
       });
     });
@@ -380,13 +400,27 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     );
   }
 
-  // ngAfterViewInit(): void {
+  getTypeGrafica(x: any) {
+    console.log(x);
 
-  // }
+    return x.labels.length > 5 ? 'bar' : 'pie';
+  }
 
-  // ionViewWillLeave(): void {
-  //   this.unsuscribe$.next();
-  // }
+  getOptionsGrafica(x: any) {
+    let retorno = {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        display: false
+      },
+    };
+
+    if (x.labels.length <= 5) {
+      delete retorno.legend;
+    }
+
+    return retorno;
+  }
 
 
   validarVaciado(consulta: { consulta: string; resultado: { serie: string; cantidad: number }[] }) {
