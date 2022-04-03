@@ -83,6 +83,7 @@ export class DesarrolloInstitucionalService {
           'sexo',
           'lugar_origen',
           'dependientes_economicos',
+          'tipo_residencia',
           'beca',
           'beca_tipo',
           'estancia_academica',
@@ -99,6 +100,8 @@ export class DesarrolloInstitucionalService {
           'trabajo_acutal_relacion_carrera',
           'trabajo_acutal_ingreso_mensual',
           'trabajo_estudio',
+          'evaluacion_plan',
+          'evaluacion_plan',
           'evaluacion_plan',
           'comentarios',
           'escoger_uacj',
@@ -125,6 +128,7 @@ export class DesarrolloInstitucionalService {
           'trabajo_acutal_tipo_contrato',
           'trabajo_acutal_relacion_carrera',
           'trabajo_acutal_ingreso_mensual',
+          'evaluacion_plan',
           'evaluacion_plan',
           'comentarios',
           'escoger_uacj',
@@ -155,6 +159,7 @@ export class DesarrolloInstitucionalService {
           'trabajo_acutal_valoracion',
           'trabajo_acutal_promocion',
           'evaluacion_uacj',
+          'evaluacion_uacj',
           'comentarios',
         ];
       case 'seguimiento5':
@@ -180,6 +185,7 @@ export class DesarrolloInstitucionalService {
           'trabajo_acutal_ingreso_mensual',
           'trabajo_acutal_valoracion',
           'trabajo_acutal_promocion',
+          'evaluacion_uacj',
           'evaluacion_uacj',
           'comentarios',
         ];
@@ -213,6 +219,9 @@ export class DesarrolloInstitucionalService {
       }))]);
     }
 
+    let evaluacionEncontrada = 0;
+    let evaluacionEncontradaUACJ = 0;
+
     return forkJoin((consultasSeleccionadas).map((consulta) => this.http.get(`${this.getRuta(`/${rubro}`)}/${consulta}/${periodo}/${campus}/${departamento}/${programa}`).pipe(map((x: any[]) => {
       switch (consulta) { // Debido a que los datos que devuelve el backend son diferentes, se hace un switch para cada consulta diferente, para que quede genérico
         case 'sexo':
@@ -229,9 +238,19 @@ export class DesarrolloInstitucionalService {
             ]
           });
         case 'evaluacion_plan':
-          return ({ consulta, resultado: x[0] });
+          let evaluacion = x[evaluacionEncontrada++];
+
+          if (isNaN(evaluacion)) {
+            return ({ consulta, resultado: evaluacion });
+          }
+          return ({ consulta, resultado: evaluacion, ignorar: true });
         case 'evaluacion_uacj':
-          return ({ consulta, resultado: x[0] });
+          let evaluacion2 = x[evaluacionEncontradaUACJ++];
+
+          if (isNaN(evaluacion2)) {
+            return ({ consulta, resultado: evaluacion2 });
+          }
+          return ({ consulta, resultado: evaluacion2, ignorar: true });
         case 'comentarios':
           return ({ consulta, resultado: x });
         default:

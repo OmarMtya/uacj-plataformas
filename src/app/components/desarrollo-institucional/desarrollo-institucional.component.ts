@@ -45,22 +45,14 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   rubrosDisponibles: { display: string, rubro: string }[] = Desarrollos;
 
   rubroSeleccionado: Rubro<Desarrollo> = 'padron_licenciatura'; // Entra por default a padron_licenciatura
-
+  valoracion: number;
   form: FormGroup;
 
   // ViewChild for ionic
   @ViewChild('containerRubros') containerRubros: ElementRef;
   unsuscribe$ = new Subject();
   leave$ = new Subject();
-
-  type = 'pie';
-  options: any = {
-    responsive: true,
-    maintainAspectRatio: false,
-    // legend: {
-    //   display: false
-    // }
-  };
+  cargando = true;
 
   fechaCorte: { fecha: string, periodo: string };
 
@@ -69,7 +61,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     sin_contestar: [],
   }
 
-  comentarios = [
+  comentariosTabs = [
     {
       titulo: 'Responsabilidad social',
       seleccionado: true,
@@ -101,7 +93,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       departamento: new FormControl(null, []),
       programa: new FormControl(null, []),
       nivel: new FormControl(null, []),
-      tipoGraficas: new FormControl('pie', []),
     });
   }
 
@@ -122,27 +113,6 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.niveles = x;
     });
     this.store.pipe(select(getRubro)).pipe(takeUntil(this.leave$)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
-    this.form.get('tipoGraficas').valueChanges.pipe(takeUntil(this.leave$)).subscribe((tipoGraficas: string) => {
-      this.type = tipoGraficas;
-
-      if (this.type == 'bar' || this.type == 'line' || this.type == 'radar') {
-        this.options = {
-          responsive: true,
-          maintainAspectRatio: false,
-          legend: {
-            display: false
-          }
-        };
-      } else {
-        this.options = {
-          responsive: true,
-          maintainAspectRatio: false,
-          // legend: {
-          //   display: false
-          // }
-        };
-      }
-    });
   }
 
   ionViewDidEnter(): void {
@@ -166,7 +136,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   }
 
   seleccionarComentario(comentarios: { titulo: string, seleccionado: boolean }) {
-    this.comentarios.forEach((comentario) => {
+    this.comentariosTabs.forEach((comentario) => {
       if (comentario.titulo == comentarios.titulo) {
         comentario.seleccionado = true;
       } else {
@@ -176,7 +146,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   }
 
   checkComentarioSeleccionado(index: number) {
-    return this.comentarios[index].seleccionado;
+    return this.comentariosTabs[index]?.seleccionado;
   }
 
   llenarAvances(contestadas: any[], sin_contestar: any[]) {
@@ -262,7 +232,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                   this.reiniciarAvances();
                 }
               } else {
-                this.consulta = x.map((y) => {
+                this.consulta = x.filter((x) => x.ignorar == null).map((y) => {
                   let grafica = this.generarGrafica(y)
                   let retorno = {
                     ...y,
@@ -271,11 +241,13 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                     options: this.getOptionsGrafica(grafica),
                   };
                   return retorno;
-                }).sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Estsa consulta será cambiada cuando el usuario haga click en un rubro
-                console.log(this.consulta[0]);
+                }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Esta consulta será cambiada cuando el usuario haga click en un rubro
+
+                this.valoracion = parseFloat((x.find((x) => x.ignorar == true).resultado / 100).toFixed(1));
+                console.log(this.valoracion);
 
               }
-              console.log(this.consulta);
+              this.cargando = false;
             });
           });
 
@@ -365,6 +337,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     });
 
     this.getSubscripcionForm('programa').pipe(takeUntil(this.unsuscribe$), filter((x) => x != null)).subscribe((programa: string) => { // Esta consulta será llenada cuando el usuario cambie el valor de programa
+      this.cargando = true;
       this.desarrolloService.getConsultas(
         this.rubroSeleccionado,
         this.form.get('campus').value,
@@ -381,7 +354,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
             this.reiniciarAvances();
           }
         } else {
-          this.consulta = x.map((y) => {
+          this.consulta = x.filter((x) => x.ignorar == null).map((y) => {
             let grafica = this.generarGrafica(y)
             let retorno = {
               ...y,
@@ -390,8 +363,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
               options: this.getOptionsGrafica(grafica),
             };
             return retorno;
-          }).sort((a) => a.consulta != 'comentarios' ? -1 : 1);;
+          }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1);
         }
+        this.cargando = false;
       });
     });
   }
@@ -403,7 +377,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
   }
 
   getTypeGrafica(x: any) {
-    return x.labels.length > 5 ? 'bar' : 'pie';
+    return x.labels.length >= 5 ? 'bar' : 'pie';
   }
 
   getOptionsGrafica(x: any) {

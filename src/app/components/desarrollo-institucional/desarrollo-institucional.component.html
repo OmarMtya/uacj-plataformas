@@ -20,6 +20,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-loading *ngIf="cargando"></app-loading>
   <div class="container mx-auto p-2 pb-16">
     <div #containerRubros
       class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
@@ -29,8 +30,7 @@
       </div>
     </div>
 
-    <ng-container *ngIf="consulta">
-
+    <ng-container *ngIf="consulta && !cargando">
 
       <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
         <ng-container *ngFor="let consulta of consulta">
@@ -46,8 +46,9 @@
                 *ngIf="rubroSeleccionado != 'seguimiento2' && rubroSeleccionado != 'seguimiento5'; else elseComentariosCategorias">
                 <div
                   class="flex flex-row justify-between overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
-                  <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer" *ngFor="let comentario of comentarios"
-                    [ngClass]="{'activo': comentario.seleccionado}" (click)="seleccionarComentario(comentario)">
+                  <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer"
+                    *ngFor="let comentario of comentariosTabs" [ngClass]="{'activo': comentario.seleccionado}"
+                    (click)="seleccionarComentario(comentario)">
                     {{ comentario.titulo }}
                   </div>
                 </div>
@@ -76,6 +77,7 @@
                   </div>
                 </ng-container>
               </ng-container>
+
               <ng-template #elseComentariosCategorias>
                 <div *ngFor="let comentario of consulta.resultado"
                   class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
@@ -271,13 +273,6 @@
       <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn"
         [ngClass]="{'block': showFilters, 'hidden': !showFilters}">
         <form [formGroup]="form">
-          <select formControlName="tipoGraficas">
-            <option value="pie">Tarta</option>
-            <option value="doughnut">Dona</option>
-            <option value="bar">Barras</option>
-            <option value="line">Líneas</option>
-            <option value="radar">Radar</option>
-          </select>
           <select formControlName="periodo">
             <option disabled selected [value]="null">Periodo</option>
             <option *ngFor="let periodo of periodos" [value]="periodo.desc">{{ periodo.desc }}</option>

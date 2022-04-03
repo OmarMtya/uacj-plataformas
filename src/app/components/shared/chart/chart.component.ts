@@ -24,7 +24,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     let plugins = [];
-    let pie = this.data.labels.length <= 5;
+    let pie = this.data.labels.length < 5;
 
     if (pie) {
       plugins.push(ChartDataLabels);
