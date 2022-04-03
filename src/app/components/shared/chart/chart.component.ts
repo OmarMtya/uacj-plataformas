@@ -32,6 +32,9 @@ export class ChartComponent implements OnInit, AfterViewInit {
 
     let options = {
       ...this.options,
+      animation: {
+        duration: 0
+      },
       plugins: {
         legend: {
           display: pie ? true : false,
@@ -61,7 +64,7 @@ export class ChartComponent implements OnInit, AfterViewInit {
       }
     };
 
-    if(pie){
+    if (pie) {
       delete options.scales;
     }
 

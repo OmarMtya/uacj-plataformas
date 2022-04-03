@@ -94,18 +94,16 @@ export class DesarrolloInstitucionalService {
           'practicas_profesionales',
           'estudio_interrumpido',
           'estudio_interrumpido_tipo',
+          'trabajo_estudio',
           'trabajo_actual',
           'trabajo_acutal_sector',
           'trabajo_acutal_tipo_contrato',
           'trabajo_acutal_relacion_carrera',
           'trabajo_acutal_ingreso_mensual',
-          'trabajo_estudio',
           'evaluacion_plan',
           'evaluacion_plan',
           'evaluacion_plan',
           'comentarios',
-          'escoger_uacj',
-          'estudiar_posgrado_uacj',
         ];
         break;
       case 'padron_posgrado':
@@ -141,12 +139,12 @@ export class DesarrolloInstitucionalService {
           'rango_edad',
           'dependientes_economicos',
           'tipo_residencia',
+          'estudios_posgrado',
+          'grado_maximo',
+          'beca_posgrado',
+          'tipo_beca',
           'titulacion',
           'titulacion_dificultad',
-          'grado_maximo',
-          'estudios_posgrado',
-          'tipo_beca',
-          'beca_posgrado',
           'trabajo_actual',
           'trabajo_actual_tiempo',
           'trabajo_acutal_uso_ingles',
@@ -162,6 +160,7 @@ export class DesarrolloInstitucionalService {
           'evaluacion_uacj',
           'comentarios',
         ];
+        break;
       case 'seguimiento5':
         consultasSeleccionadas = [
           'estado_civil',
@@ -169,12 +168,12 @@ export class DesarrolloInstitucionalService {
           'rango_edad',
           'dependientes_economicos',
           'tipo_residencia',
+          'estudios_posgrado',
+          'grado_maximo',
+          'beca_posgrado',
+          'tipo_beca',
           'titulacion',
           'titulacion_dificultad',
-          'grado_maximo',
-          'estudios_posgrado',
-          'tipo_beca',
-          'beca_posgrado',
           'trabajo_actual',
           'trabajo_actual_tiempo',
           'trabajo_acutal_uso_ingles',
@@ -238,16 +237,31 @@ export class DesarrolloInstitucionalService {
             ]
           });
         case 'evaluacion_plan':
-          let evaluacion = x[evaluacionEncontrada++];
+          let evaluacion = x[evaluacionEncontrada];
 
           if (isNaN(evaluacion)) {
+
+            switch (evaluacionEncontrada++) {
+              case 0:
+                consulta = 'valoracion_del_programa_educativo';
+                break;
+              case 1:
+                consulta = 'valoracion_de_la_institucion';
+                break;
+            }
+
             return ({ consulta, resultado: evaluacion });
           }
           return ({ consulta, resultado: evaluacion, ignorar: true });
         case 'evaluacion_uacj':
-          let evaluacion2 = x[evaluacionEncontradaUACJ++];
+          let evaluacion2 = x[evaluacionEncontradaUACJ];
 
           if (isNaN(evaluacion2)) {
+            switch (evaluacionEncontradaUACJ++) {
+              case 0:
+                consulta = 'valoracion_del_programa_educativo';
+                break;
+            }
             return ({ consulta, resultado: evaluacion2 });
           }
           return ({ consulta, resultado: evaluacion2, ignorar: true });

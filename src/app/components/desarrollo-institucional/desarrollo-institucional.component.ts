@@ -27,9 +27,9 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 @Component({
   selector: 'app-desarrollo-institucional',
   templateUrl: './desarrollo-institucional.component.html',
-  styleUrls: ['./desarrollo-institucional.component.css']
+  styleUrls: ['./desarrollo-institucional.component.scss']
 })
-export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, ViewDidEnter {
+export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, ViewDidEnter, ViewDidEnter {
 
 
   @Input() name: string;
@@ -115,8 +115,68 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     this.store.pipe(select(getRubro)).pipe(takeUntil(this.leave$)).subscribe((rubro: Rubro<Desarrollo>) => this.rubroSeleccionado = rubro); // Lo pongo aquí para que detectarRubro se ejecute con el nuevo rubro
   }
 
+  ocultarColapsables() {
+    setTimeout(() => {
+      let items_colapsables = document.querySelectorAll('.item-colapsable');
+
+      let items_ocultar = [];
+
+      items_colapsables.forEach((element, index) => {
+        items_ocultar.push(element);
+      });
+
+      items_ocultar.forEach((element) => {
+        if (!element.classList.contains('colapsable')) {
+          element.classList.add('oculto');
+        } else {
+          element.classList.remove('colapsable_selected');
+        }
+      });
+
+    }, 1);
+  }
+
+  mostrarColapsables(elemento: HTMLElement) {
+    this.ocultarColapsables();
+    if (elemento.classList.contains('colapsable_selected')) {
+      return;
+    }
+    setTimeout(() => {
+      let items_colapsables = document.querySelectorAll('.item-colapsable');
+
+      // Remove the class 'oculto' from all the items between the variable 'elemento' and the last item before any element with the class 'colapsable'
+      let items_mostrar = [];
+
+      let encontado = false;
+      let encontradoSiguienteColapsable = false;
+
+      items_colapsables.forEach(element => {
+        // Check if element is the same element of eventClick.target
+        if (element == elemento) {
+          encontado = true;
+          elemento.classList.add('colapsable_selected');
+          return;
+        }
+
+        if (encontado && !encontradoSiguienteColapsable) {
+          if (element.classList.contains('colapsable')) {
+            encontradoSiguienteColapsable = true;
+            return;
+          }
+          items_mostrar.push(element);
+        }
+      });
+
+      items_mostrar.forEach(element => {
+        element.classList.remove('oculto');
+      });
+    }, 1);
+  }
+
   ionViewDidEnter(): void {
-    this.clickRubro(document.querySelector('.padron_licenciatura'), 'padron_licenciatura');
+    setTimeout(() => {
+      this.clickRubro(document.querySelector('.padron_licenciatura'), 'padron_licenciatura');
+    }, 200);
   }
 
   logout() {
@@ -248,6 +308,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
 
               }
               this.cargando = false;
+              this.ocultarColapsables();
             });
           });
 
@@ -366,6 +427,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
           }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1);
         }
         this.cargando = false;
+        this.ocultarColapsables();
       });
     });
   }
@@ -403,6 +465,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
       this.containerRubros.nativeElement.scroll({ left: rubro.offsetLeft - (this.containerRubros.nativeElement.offsetWidth / 2) + (rubro.offsetWidth / 4), behavior: 'smooth' }); // Hace scroll al elemento para poder verlo en el centro
       rubro.classList.add('activo'); // Le pone la clase de activo al elemento seleccionado
     }
+    this.cargando = true;
     this.unsuscribe$.next(); //! Me desuscribo de todos lados
     this.actions$.pipe( // Lo pongo antes para que se ejecute después de que se cambie el rubro
       ofType(getPeriodosSuccess),

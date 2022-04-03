@@ -20,7 +20,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <app-loading *ngIf="cargando"></app-loading>
   <div class="container mx-auto p-2 pb-16">
     <div #containerRubros
       class="flex flex-row overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
@@ -30,84 +29,117 @@
       </div>
     </div>
 
-    <ng-container *ngIf="consulta && !cargando">
+    <ng-container *ngIf="consulta">
 
       <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
-        <ng-container *ngFor="let consulta of consulta">
-          <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
+        <ng-container *ngFor="let consulta of consulta; index as j">
 
-            <div class="col-span-full">
+
+          <!-- Empiezan los headers -->
+
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento *ngIf="consulta.consulta == 'estado_civil'">
+            <div class="text-white font-bold tracking-wider text-2xl relative w-full">
+              <img src="https://indicadores.uacj.mx/edi/public/docs/dat_gral.jpg"
+                class="w-full object-cover h-20 rounded">
+              <div style="background-color: #00000088;"
+                class="w-full h-full absolute top-0 px-4 flex justify-between items-center rounded">
+                Datos generales
+                <ion-icon name="caret-down"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
+            *ngIf="consulta.consulta == 'beca' || consulta.consulta == 'estudios_posgrado'">
+            <div class="text-white font-bold tracking-wider text-2xl relative w-full">
+              <img src="https://indicadores.uacj.mx/edi/public/docs/trayectoria.jpg"
+                class="w-full object-cover h-20 rounded">
+              <div style="background-color: #00000088;"
+                class="w-full h-full absolute top-0 px-4 flex justify-between items-center rounded">
+                Trayectoria académica
+                <ion-icon name="caret-down"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
+            *ngIf="(rubroSeleccionado == 'padron_licenciatura' && consulta.consulta == 'trabajo_estudio') || ((rubroSeleccionado == 'padron_posgrado' || rubroSeleccionado == 'seguimiento2' || rubroSeleccionado == 'seguimiento5') && consulta.consulta == 'trabajo_actual')">
+            <div class="text-white font-bold tracking-wider text-2xl relative w-full">
+              <img src="https://indicadores.uacj.mx/edi/public/docs/sec_laboral.jpg"
+                class="w-full object-cover h-20 rounded">
+              <div style="background-color: #00000088;"
+                class="w-full h-full absolute top-0 px-4 flex justify-between items-center rounded">
+                Trayectoria laboral
+                <ion-icon name="caret-down"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
+            *ngIf="consulta.consulta == 'valoracion_del_programa_educativo'">
+            <div class="text-white font-bold tracking-wider text-2xl relative w-full">
+              <img src="https://indicadores.uacj.mx/edi/public/docs/valoracion.jpg"
+                class="w-full object-cover h-20 rounded">
+              <div style="background-color: #00000088;"
+                class="w-full h-full absolute top-0 px-4 flex justify-between items-center rounded">
+                Valoración de la formación UACJ
+                <ion-icon name="caret-down"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminan los headers -->
+
+          <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
+            <div class="col-span-full inner-colapsable item-colapsable">
               <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
                 Comentarios
               </div>
 
 
-              <ng-container
-                *ngIf="rubroSeleccionado != 'seguimiento2' && rubroSeleccionado != 'seguimiento5'; else elseComentariosCategorias">
-                <div
-                  class="flex flex-row justify-between overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
-                  <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer"
-                    *ngFor="let comentario of comentariosTabs" [ngClass]="{'activo': comentario.seleccionado}"
-                    (click)="seleccionarComentario(comentario)">
-                    {{ comentario.titulo }}
+              <div
+                class="flex flex-row justify-between overflow-x-auto mb-4 container-scrollbar border-gray-200 border-b cursor-pointer">
+                <div class="px-5 text-gray-300 font-thin pb-2 cursor-pointer" *ngFor="let comentario of comentariosTabs"
+                  [ngClass]="{'activo': comentario.seleccionado}" (click)="seleccionarComentario(comentario)">
+                  {{ comentario.titulo }}
+                </div>
+              </div>
+
+              <ng-container *ngFor="let resultado of consulta.resultado; index as i">
+                <div class="antialiased mx-auto max-w-screen-sm" *ngIf="checkComentarioSeleccionado(i)">
+                  <div class="space-y-4">
+
+                    <div class="flex" *ngFor="let comentario of resultado">
+                      <div class="flex-shrink-0 mr-3">
+                        <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                          src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" alt="">
+                      </div>
+                      <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                        <strong>{{comentario.Programa}}</strong>
+                        <span class="text-xs text-gray-400 ml-1">
+                          {{comentario.Campus}}
+                        </span>
+                        <p class="text-sm">
+                          {{comentario.Comentario}}
+                        </p>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
-
-                <ng-container *ngFor="let resultado of consulta.resultado; index as i">
-                  <div class="antialiased mx-auto max-w-screen-sm" *ngIf="checkComentarioSeleccionado(i)">
-                    <div class="space-y-4">
-
-                      <div class="flex" *ngFor="let comentario of resultado">
-                        <div class="flex-shrink-0 mr-3">
-                          <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                            src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" alt="">
-                        </div>
-                        <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                          <strong>{{comentario.Programa}}</strong>
-                          <span class="text-xs text-gray-400 ml-1">
-                            {{comentario.Campus}}
-                          </span>
-                          <p class="text-sm">
-                            {{comentario.Comentario}}
-                          </p>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </ng-container>
               </ng-container>
 
-              <ng-template #elseComentariosCategorias>
-                <div *ngFor="let comentario of consulta.resultado"
-                  class="flex rounded-md mb-4 p-4 border pt-3 bg-white shadow-lg">
-                  <div class="imagen flex-grow-0">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                      style="height: 30px; width: 30px" class="rounded-full">
-                  </div>
-                  <div class="contenido flex-grow ml-3">
-                    <div class="font-bold">
-                      {{comentario.Programa}} <small class="font-light">{{comentario.Campus}}</small>
-                    </div>
-                    <div class="mt-2">
-                      {{comentario.Comentario}}
-                    </div>
-                  </div>
-                </div>
-              </ng-template>
-
             </div>
-
           </ng-container>
-
           <ng-template #elseComentarios>
-            <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border">
+            <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border inner-colapsable item-colapsable">
               <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
                 {{consulta.consulta | removeUnderscore | titlecase | acentos }}
               </div>
               <ng-container *ngIf="validarVaciado(consulta); else elseSinData">
                 <!-- <chart [type]="consulta.type" [data]="consulta.data" [options]="consulta.options"></chart> -->
-                <app-chart [chartType]="consulta.type" [data]="consulta.data" [options]="consulta.options"></app-chart>
+                <app-chart [chartType]="consulta.type" [data]="consulta.data" [options]="consulta.options">
+                </app-chart>
               </ng-container>
               <ng-template #elseSinData>
                 <div class="text-center mt-5">
@@ -267,7 +299,6 @@
 
   </div>
 
-
   <div class="fixed bottom-0 right-0 m-2">
     <div class="relative">
       <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn"
@@ -306,4 +337,6 @@
       </div>
     </div>
   </div>
+
+  <app-loading [hidden]="!cargando"></app-loading>
 </ion-content>
