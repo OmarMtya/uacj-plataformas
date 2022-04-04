@@ -252,7 +252,7 @@ export class DesarrolloInstitucionalService {
 
             return ({ consulta, resultado: evaluacion });
           }
-          return ({ consulta, resultado: evaluacion, ignorar: true });
+          return ({ consulta: 'semaforo', resultado: evaluacion, ignorar: true });
         case 'evaluacion_uacj':
           let evaluacion2 = x[evaluacionEncontradaUACJ];
 
@@ -264,7 +264,7 @@ export class DesarrolloInstitucionalService {
             }
             return ({ consulta, resultado: evaluacion2 });
           }
-          return ({ consulta, resultado: evaluacion2, ignorar: true });
+          return ({ consulta: 'semaforo', resultado: evaluacion2, ignorar: true });
         case 'comentarios':
           return ({ consulta, resultado: x });
         default:

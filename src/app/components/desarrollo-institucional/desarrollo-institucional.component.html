@@ -37,7 +37,8 @@
 
           <!-- Empiezan los headers -->
 
-          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento *ngIf="consulta.consulta == 'estado_civil'">
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)"
+            #elemento *ngIf="consulta.consulta == 'estado_civil'">
             <div class="text-white font-bold tracking-wider text-2xl relative w-full">
               <img src="https://indicadores.uacj.mx/edi/public/docs/dat_gral.jpg"
                 class="w-full object-cover h-20 rounded">
@@ -49,8 +50,8 @@
             </div>
           </div>
 
-          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
-            *ngIf="consulta.consulta == 'beca' || consulta.consulta == 'estudios_posgrado'">
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)"
+            #elemento *ngIf="consulta.consulta == 'beca' || consulta.consulta == 'estudios_posgrado'">
             <div class="text-white font-bold tracking-wider text-2xl relative w-full">
               <img src="https://indicadores.uacj.mx/edi/public/docs/trayectoria.jpg"
                 class="w-full object-cover h-20 rounded">
@@ -62,7 +63,8 @@
             </div>
           </div>
 
-          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)"
+            #elemento
             *ngIf="(rubroSeleccionado == 'padron_licenciatura' && consulta.consulta == 'trabajo_estudio') || ((rubroSeleccionado == 'padron_posgrado' || rubroSeleccionado == 'seguimiento2' || rubroSeleccionado == 'seguimiento5') && consulta.consulta == 'trabajo_actual')">
             <div class="text-white font-bold tracking-wider text-2xl relative w-full">
               <img src="https://indicadores.uacj.mx/edi/public/docs/sec_laboral.jpg"
@@ -75,8 +77,8 @@
             </div>
           </div>
 
-          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)" #elemento
-            *ngIf="consulta.consulta == 'valoracion_del_programa_educativo'">
+          <div class="col-span-full colapsable item-colapsable cursor-pointer" (click)="mostrarColapsables(elemento)"
+            #elemento *ngIf="consulta.consulta == 'valoracion_del_programa_educativo'">
             <div class="text-white font-bold tracking-wider text-2xl relative w-full">
               <img src="https://indicadores.uacj.mx/edi/public/docs/valoracion.jpg"
                 class="w-full object-cover h-20 rounded">
@@ -92,6 +94,18 @@
 
           <ng-container *ngIf="consulta.consulta == 'comentarios'; else elseComentarios">
             <div class="col-span-full inner-colapsable item-colapsable">
+              <div class="my-8">
+                <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
+                  Nivel de satisfacción de egresados
+                </div>
+                <div class="gauge my-4">
+                  <div class="gauge__body">
+                    <div class="gauge__fill"></div>
+                    <div class="gauge__cover"></div>
+                  </div>
+                </div>
+              </div>
+
               <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
                 Comentarios
               </div>
@@ -132,7 +146,8 @@
             </div>
           </ng-container>
           <ng-template #elseComentarios>
-            <div class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border inner-colapsable item-colapsable">
+            <div
+              class="block bg-white rounded-lg overflow-hidden p-4 shadow-lg border inner-colapsable item-colapsable">
               <div class="text-center text-lg text-gray-900 title-font mb-4 whitespace-nowrap truncate font-bold">
                 {{consulta.consulta | removeUnderscore | titlecase | acentos }}
               </div>
@@ -149,6 +164,7 @@
 
             </div>
           </ng-template>
+
         </ng-container>
 
 

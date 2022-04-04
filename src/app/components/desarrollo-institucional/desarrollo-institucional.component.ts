@@ -136,6 +136,27 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
     }, 1);
   }
 
+  setGaugage() {
+    setTimeout(() => {
+      const gauge = document.querySelector(".gauge");
+
+      if (this.valoracion < 0 || this.valoracion > 1) {
+        return;
+      }
+      if (!gauge) {
+        console.log("No hay guage", gauge);
+        return;
+      }
+      (<any>gauge.querySelector(".gauge__fill")).style.transform = `rotate(${this.valoracion / 2
+        }turn)`;
+      gauge.querySelector(".gauge__cover").textContent = `${Math.round(
+        this.valoracion * 100
+      )}%`;
+      console.log(this.valoracion);
+
+    }, 1);
+  }
+
   mostrarColapsables(elemento: HTMLElement) {
     this.ocultarColapsables();
     if (elemento.classList.contains('colapsable_selected')) {
@@ -303,9 +324,8 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                   return retorno;
                 }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Esta consulta será cambiada cuando el usuario haga click en un rubro
 
-                this.valoracion = parseFloat((x.find((x) => x.ignorar == true).resultado / 100).toFixed(1));
-                console.log(this.valoracion);
-
+                this.valoracion = parseFloat((x.find((x) => x.ignorar == true).resultado / 1000).toFixed(1));
+                this.setGaugage();
               }
               this.cargando = false;
               this.ocultarColapsables();
@@ -425,6 +445,9 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
             };
             return retorno;
           }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1);
+
+          this.valoracion = parseFloat((x.find((x) => x.ignorar == true).resultado / 1000).toFixed(1));
+          this.setGaugage();
         }
         this.cargando = false;
         this.ocultarColapsables();
