@@ -313,7 +313,7 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                   this.reiniciarAvances();
                 }
               } else {
-                this.consulta = x.filter((x) => x.ignorar == null).map((y) => {
+                let consultaFix = x.filter((x) => x.ignorar == null).map((y) => {
                   let grafica = this.generarGrafica(y)
                   let retorno = {
                     ...y,
@@ -322,7 +322,14 @@ export class DesarrolloInstitucionalComponent implements OnInit, OnDestroy, View
                     options: this.getOptionsGrafica(grafica),
                   };
                   return retorno;
-                }).reverse().sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Esta consulta será cambiada cuando el usuario haga click en un rubro
+                });
+
+                // If is firefox, reverse the array
+                if (!navigator.userAgent.toLowerCase().includes('firefox')) {
+                  consultaFix = consultaFix.reverse();
+                }
+                consultaFix = consultaFix.sort((a) => a.consulta != 'comentarios' ? -1 : 1); // Esta consulta será cambiada cuando el usuario haga click en un rubro
+                this.consulta = consultaFix;
 
                 this.valoracion = parseFloat((x.find((x) => x.ignorar == true).resultado / 1000).toFixed(1));
                 this.setGaugage();
