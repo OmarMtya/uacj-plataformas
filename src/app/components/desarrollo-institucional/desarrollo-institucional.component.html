@@ -315,7 +315,7 @@
 
   </div>
 
-  <div class="fixed bottom-0 right-0 m-2">
+  <div class="fixed bottom-0 right-0 m-2 firefox">
     <div class="relative">
       <div class="bg-blue-500 rounded-lg px-4 py-2 w-52 mb-14 shadow-lg animate__animated animate__fadeIn"
         [ngClass]="{'block': showFilters, 'hidden': !showFilters}">
@@ -348,7 +348,7 @@
         </form>
       </div>
       <div (click)="showFilters = !showFilters"
-        class="rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer z-50">
+        class="firefox rounded-full bg-blue-500 h-12 w-12 text-white flex justify-center items-center shadow-lg fixed bottom-0 right-0 m-2 hover:bg-blue-700 cursor-pointer z-50">
         <ion-icon [name]="showFilters? 'close' : 'funnel'" class="text-xl"></ion-icon>
       </div>
     </div>

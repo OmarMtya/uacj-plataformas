@@ -104,3 +104,9 @@ select{
 canvas{
   min-height: 300px;
 }
+
+@-moz-document url-prefix() {
+  .firefox {
+    margin-bottom: 65px;
+  }
+}
